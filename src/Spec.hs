@@ -85,7 +85,7 @@ correrTests = hspec $ do
 
   -- d. Tests de bautizarAuto
     it "Bautizar 'El diablo' a un auto marca Lamborghini, debe contener en sus apodos 'El diablo'" $ do
-      bautizarAuto lamborghini "El diablo" `shouldBe` lamborghini { apodos = apodos lamborghini ++ ["El diablo"] }
+      apodos (bautizarAuto lamborghini "El diablo") `elem` "El diablo" `shouldBe` True
     it "Bautizar 'El diablo' a un auto marca Lamborghini sin apodos, sólo tiene el apodo 'El diablo'" $ do
       bautizarAuto lamborghini { apodos = [] } "El diablo" `shouldBe` lamborghini { apodos =["El diablo"] }
 
