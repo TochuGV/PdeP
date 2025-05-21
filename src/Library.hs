@@ -109,10 +109,10 @@ sumaTiempo :: Number -> Number -> Number
 sumaTiempo longitud velocidad = longitud / (velocidad / factorDivision)
 
 curvaPeligrosa :: Auto -> Auto
-curvaPeligrosa auto = auto { desgasteRuedas = calculoDesgasteTramo (desgasteRuedas auto) longitudPeligrosa anguloPeligroso, tiempoCarrera = sumaTiempo longitudPeligrosa (velocidadMáxima auto)}
+curvaPeligrosa auto = auto { desgasteRuedas = calculoDesgasteTramo (desgasteRuedas auto) longitudPeligrosa anguloPeligroso, tiempoCarrera = tiempoCarrera auto + sumaTiempo longitudPeligrosa (velocidadMáxima auto)}
 
 curvaTranca :: Auto -> Auto
-curvaTranca auto = auto { desgasteRuedas = calculoDesgasteTramo (desgasteRuedas auto) longitudTranca anguloTranca, tiempoCarrera = sumaTiempo longitudTranca (velocidadMáxima auto)} 
+curvaTranca auto = auto { desgasteRuedas = calculoDesgasteTramo (desgasteRuedas auto) longitudTranca anguloTranca, tiempoCarrera = tiempoCarrera auto + sumaTiempo longitudTranca (velocidadMáxima auto)} 
 
 -- b. El tramo recto
 longitudTramoRectoClassic, longitudTramito :: Number
@@ -143,7 +143,7 @@ desgasteRuedasTramoZigZag :: Auto -> Number -> Number
 desgasteRuedasTramoZigZag auto cambios = velocidadMáxima auto * cambios / 10
 
 zigZagLoco :: Auto -> Auto
-zigZagLoco auto = auto { desgasteChasis = 5, desgasteRuedas = desgasteRuedasTramoZigZag auto cambiosDirecciónZigZagLoco, tiempoCarrera = tiempoCarrera auto + tiempoDeCambios cambiosDirecciónZigZagLoco }
+zigZagLoco auto = auto { desgasteChasis = desgasteChasis auto + 5, desgasteRuedas = desgasteRuedasTramoZigZag auto cambiosDirecciónZigZagLoco, tiempoCarrera = tiempoCarrera auto + tiempoDeCambios cambiosDirecciónZigZagLoco }
 
 casiCurva :: Auto -> Auto
 casiCurva auto = auto { desgasteChasis = 5, desgasteRuedas = desgasteRuedasTramoZigZag auto cambiosDirecciónCasiCurva, tiempoCarrera = tiempoCarrera auto + tiempoDeCambios cambiosDirecciónCasiCurva}
@@ -162,10 +162,10 @@ sumaTiempoRulo :: Number -> Number -> Number
 sumaTiempoRulo diametro velocidad = factorSumaRulo * diametro / velocidad
 
 ruloClasico :: Auto -> Auto
-ruloClasico auto = auto { desgasteRuedas = calculoDesgasteRulo (desgasteRuedas auto) diametroClasico, tiempoCarrera = sumaTiempoRulo diametroClasico (velocidadMáxima auto) }
+ruloClasico auto = auto { desgasteRuedas = calculoDesgasteRulo (desgasteRuedas auto) diametroClasico, tiempoCarrera = tiempoCarrera auto + sumaTiempoRulo diametroClasico (velocidadMáxima auto) }
 
 deseoDeMuerte :: Auto -> Auto
-deseoDeMuerte auto = auto { desgasteRuedas = calculoDesgasteRulo (desgasteRuedas auto) diametroDeMuerte, tiempoCarrera = sumaTiempoRulo diametroDeMuerte (velocidadMáxima auto) }
+deseoDeMuerte auto = auto { desgasteRuedas = calculoDesgasteRulo (desgasteRuedas auto) diametroDeMuerte, tiempoCarrera = tiempoCarrera auto + sumaTiempoRulo diametroDeMuerte (velocidadMáxima auto) }
 
 -- 5. Nivel de joyez
 
