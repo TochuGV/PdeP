@@ -35,10 +35,10 @@ peugeot = UnAuto { marca = Peugeot, modelo = P504, desgasteChasis = 0, desgasteR
 
 -- a. Saber si un auto está en buen estado
 buenEstado :: Auto -> Bool
---buenEstado auto {marca = Peugeot} = False
+buenEstado UnAuto {marca = Peugeot} = False
 buenEstado auto
-  | desgasteChasis auto < 20 = tiempoCarrera auto < 100 
-  | desgasteChasis auto < 40 = desgasteRuedas auto < 60
+  | tiempoCarrera auto < 100 = desgasteChasis auto < 20
+  | desgasteRuedas auto < 60 = desgasteChasis auto < 40
   | otherwise = False
 
 -- b. Saber si un auto no da más
