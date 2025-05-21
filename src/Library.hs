@@ -35,22 +35,28 @@ peugeot = UnAuto { marca = Peugeot, modelo = P504, desgasteChasis = 0, desgasteR
 
 -- a. Saber si un auto está en buen estado
 buenEstado :: Auto -> Bool
-buenEstado auto = marca auto /= Peugeot && (tiempoCarrera auto < 100 && desgasteChasis auto < 20 || tiempoCarrera auto >= 100 && desgasteChasis auto < 40 && desgasteRuedas auto < 60)
+--buenEstado auto {marca = Peugeot} = False
+buenEstado auto
+  | desgasteChasis auto < 20 = tiempoCarrera auto < 100 
+  | desgasteChasis auto < 40 = desgasteRuedas auto < 60
+  | otherwise = False
 
 -- b. Saber si un auto no da más
 noDaMas :: Auto -> Bool
-noDaMas auto = take 2 (head (apodos auto)) == "La" && (desgasteChasis auto > 80 || desgasteRuedas auto > 80)
+noDaMas auto = take 2 (head (apodos auto)) == "La" && desgasteChasis auto > 80 || desgasteRuedas auto > 80
 
 -- c. Saber si un auto es un chiche
 cantidadDeApodos :: Auto -> Number
 cantidadDeApodos auto = length (apodos auto)
 
 esChiche :: Auto -> Bool
-esChiche auto = (desgasteChasis auto < 20 && even (cantidadDeApodos auto)) || (desgasteChasis auto < 50 && odd (cantidadDeApodos auto))
+esChiche auto
+  | even (cantidadDeApodos auto) = desgasteChasis auto < 20
+  | otherwise = desgasteChasis auto < 50
 
 -- d. Saber si un auto es una joya
 esJoya :: Auto -> Bool
-esJoya auto = desgasteChasis auto == 0 && (cantidadDeApodos auto <= 1) 
+esJoya auto = desgasteChasis auto == 0 && desgasteRuedas auto == 0 && (cantidadDeApodos auto <= 1) 
 
 -- e. Conocer el nivel de chetez de un auto
 nivelDeChetez :: Auto -> Number
@@ -94,19 +100,17 @@ desarmadero auto marcaNueva modeloNuevo = auto {marca = marcaNueva, modelo = mod
 -- 4. ¡Pistas!
 
 -- a. El tramo curva
-anguloPeligroso, longitudPeligrosa, anguloTranca, longitudTranca, factorMultiplicativo, factorDivision :: Number
+anguloPeligroso, longitudPeligrosa, anguloTranca, longitudTranca :: Number
 anguloPeligroso = 60
 longitudPeligrosa = 300
 anguloTranca = 110
 longitudTranca = 550
-factorMultiplicativo = 3
-factorDivision = 2
 
 calculoDesgasteTramo :: Number -> Number -> Number -> Number
-calculoDesgasteTramo desgasteActual longitud angulo = (factorMultiplicativo * longitud / angulo) + desgasteActual 
+calculoDesgasteTramo desgasteActual longitud angulo = (3 * longitud / angulo) + desgasteActual 
 
 sumaTiempo :: Number -> Number -> Number
-sumaTiempo longitud velocidad = longitud / (velocidad / factorDivision)
+sumaTiempo longitud velocidad = longitud / (velocidad / 2)
 
 curvaPeligrosa :: Auto -> Auto
 curvaPeligrosa auto = auto { desgasteRuedas = calculoDesgasteTramo (desgasteRuedas auto) longitudPeligrosa anguloPeligroso, tiempoCarrera = tiempoCarrera auto + sumaTiempo longitudPeligrosa (velocidadMáxima auto)}
@@ -146,7 +150,7 @@ zigZagLoco :: Auto -> Auto
 zigZagLoco auto = auto { desgasteChasis = desgasteChasis auto + 5, desgasteRuedas = desgasteRuedasTramoZigZag auto cambiosDirecciónZigZagLoco, tiempoCarrera = tiempoCarrera auto + tiempoDeCambios cambiosDirecciónZigZagLoco }
 
 casiCurva :: Auto -> Auto
-casiCurva auto = auto { desgasteChasis = 5, desgasteRuedas = desgasteRuedasTramoZigZag auto cambiosDirecciónCasiCurva, tiempoCarrera = tiempoCarrera auto + tiempoDeCambios cambiosDirecciónCasiCurva}
+casiCurva auto = auto { desgasteChasis = 5, desgasteRuedas = desgasteRuedas auto + desgasteRuedasTramoZigZag auto cambiosDirecciónCasiCurva, tiempoCarrera = tiempoCarrera auto + tiempoDeCambios cambiosDirecciónCasiCurva}
 
 -- d. El tramo rulo en el aire
 factorDesgasteRulo, factorSumaRulo, diametroClasico, diametroDeMuerte :: Number
