@@ -1,6 +1,8 @@
 module Library where
 import PdePreludat
 
+---------------------------------------- ENTREGA 1 ----------------------------------------
+
 -- 1. Modelar el auto 
 data Auto = UnAuto { 
   marca :: Marca,
@@ -38,8 +40,9 @@ buenEstado :: Auto -> Bool
 buenEstado UnAuto {marca = Peugeot} = False
 buenEstado auto
   | tiempoCarrera auto < 100 = desgasteChasis auto < 20
-  | desgasteRuedas auto < 60 = desgasteChasis auto < 40
-  | otherwise = False
+  | otherwise = desgasteRuedas auto < 60 && desgasteChasis auto < 40
+  -- | desgasteRuedas auto < 60 = desgasteChasis auto < 40
+  -- | otherwise = False
 
 -- b. Saber si un auto no da más
 noDaMas :: Auto -> Bool
@@ -79,23 +82,23 @@ nivelDeRiesgo auto
 
 -- a. Reparar un Auto 
 repararAuto :: Auto -> Auto
-repararAuto auto = auto {desgasteChasis = desgasteChasis auto * 0.15, desgasteRuedas = 0}
+repararAuto auto = auto { desgasteChasis = desgasteChasis auto * 0.15, desgasteRuedas = 0 }
 
 -- b. Aplicar una penalidad de tiempo a un auto
 aplicarPenalidad :: Auto -> Number -> Auto
-aplicarPenalidad auto tiempo = auto {tiempoCarrera = tiempoCarrera auto + tiempo}
+aplicarPenalidad auto tiempo = auto { tiempoCarrera = tiempoCarrera auto + tiempo }
 
 -- c. Ponerle nitro a un auto
 ponerNitro :: Auto -> Auto
-ponerNitro auto = auto{velocidadMáxima = velocidadMáxima auto  * 1.2}
+ponerNitro auto = auto { velocidadMáxima = velocidadMáxima auto  * 1.2}
 
 -- d. Bautizar un auto
 bautizarAuto :: Auto -> String -> Auto
-bautizarAuto auto nuevoApodo = auto {apodos = apodos auto ++ [nuevoApodo]}
+bautizarAuto auto nuevoApodo = auto {apodos = apodos auto ++ [nuevoApodo] }
 
 -- e. LLevar un auto a un desarmadero
 desarmadero :: Auto -> Marca -> Modelo -> Auto
-desarmadero auto marcaNueva modeloNuevo = auto {marca = marcaNueva, modelo = modeloNuevo, apodos = ["Nunca taxi"] }
+desarmadero auto marcaNueva modeloNuevo = auto { marca = marcaNueva, modelo = modeloNuevo, apodos = ["Nunca taxi"] }
 
 -- 4. ¡Pistas!
 
@@ -113,10 +116,10 @@ sumaTiempo :: Number -> Number -> Number
 sumaTiempo longitud velocidad = longitud / (velocidad / 2)
 
 curvaPeligrosa :: Auto -> Auto
-curvaPeligrosa auto = auto { desgasteRuedas = calculoDesgasteTramo (desgasteRuedas auto) longitudPeligrosa anguloPeligroso, tiempoCarrera = tiempoCarrera auto + sumaTiempo longitudPeligrosa (velocidadMáxima auto)}
+curvaPeligrosa auto = auto { desgasteRuedas = calculoDesgasteTramo (desgasteRuedas auto) longitudPeligrosa anguloPeligroso, tiempoCarrera = tiempoCarrera auto + sumaTiempo longitudPeligrosa (velocidadMáxima auto) }
 
 curvaTranca :: Auto -> Auto
-curvaTranca auto = auto { desgasteRuedas = calculoDesgasteTramo (desgasteRuedas auto) longitudTranca anguloTranca, tiempoCarrera = tiempoCarrera auto + sumaTiempo longitudTranca (velocidadMáxima auto)} 
+curvaTranca auto = auto { desgasteRuedas = calculoDesgasteTramo (desgasteRuedas auto) longitudTranca anguloTranca, tiempoCarrera = tiempoCarrera auto + sumaTiempo longitudTranca (velocidadMáxima auto) } 
 
 -- b. El tramo recto
 longitudTramoRectoClassic, longitudTramito :: Number
@@ -150,7 +153,7 @@ zigZagLoco :: Auto -> Auto
 zigZagLoco auto = auto { desgasteChasis = desgasteChasis auto + 5, desgasteRuedas = desgasteRuedasTramoZigZag auto cambiosDirecciónZigZagLoco, tiempoCarrera = tiempoCarrera auto + tiempoDeCambios cambiosDirecciónZigZagLoco }
 
 casiCurva :: Auto -> Auto
-casiCurva auto = auto { desgasteChasis = 5, desgasteRuedas = desgasteRuedas auto + desgasteRuedasTramoZigZag auto cambiosDirecciónCasiCurva, tiempoCarrera = tiempoCarrera auto + tiempoDeCambios cambiosDirecciónCasiCurva}
+casiCurva auto = auto { desgasteChasis = desgasteChasis auto + 5, desgasteRuedas = desgasteRuedas auto + desgasteRuedasTramoZigZag auto cambiosDirecciónCasiCurva, tiempoCarrera = tiempoCarrera auto + tiempoDeCambios cambiosDirecciónCasiCurva }
 
 -- d. El tramo rulo en el aire
 factorDesgasteRulo, factorSumaRulo, diametroClasico, diametroDeMuerte :: Number
@@ -189,3 +192,110 @@ tiempoValido auto = tiempoCarrera auto <= 200
 
 paraEntendidos :: [Auto] -> Bool
 paraEntendidos autos = all buenEstado autos && all tiempoValido autos
+
+---------------------------------------- ENTREGA 2 ----------------------------------------
+
+-- 1. Equipos de competición
+data Equipo = UnEquipo { 
+  nombre :: String,
+  autos :: [Auto],
+  presupuesto :: Number
+} deriving (Show, Eq) 
+
+-- a. Modelar un equipo de competición
+holaMundoTeam :: Equipo
+holaMundoTeam = UnEquipo { nombre = "HolaMundo", autos = [], presupuesto = 70000 }
+
+costoInscripcion :: Auto -> Number
+costoInscripcion auto = velocidadMáxima auto * 1000
+
+-- Agregar un auto al equipo si el costo no supera al presupuesto
+agregarAuto :: Auto -> Equipo -> Equipo
+agregarAuto nuevoAuto equipo  
+  | costoInscripcion nuevoAuto <= presupuesto equipo = equipo {  autos = autos equipo ++ [nuevoAuto], presupuesto = presupuesto equipo - costoInscripcion nuevoAuto }
+  | otherwise = equipo
+
+equipo1 :: Equipo
+equipo1 = UnEquipo { nombre = "Equipo1", autos = [ferrariEq, lamborghiniEq], presupuesto = 20000 }
+equipo2 :: Equipo
+equipo2 = UnEquipo { nombre = "Equipo2", autos = [fiatEq], presupuesto = 10000 }
+equipo3 :: Equipo
+equipo3 = UnEquipo { nombre = "Equipo3", autos = [ferrariEq, lamborghiniEq], presupuesto = 10000 }
+
+fiatEq :: Auto
+fiatEq = UnAuto { marca = Fiat, modelo = F600, desgasteChasis = 50, desgasteRuedas = 0, velocidadMáxima = 33, tiempoCarrera = 0, apodos = [] }
+
+ferrariEq :: Auto
+ferrariEq = UnAuto { marca = Ferrari, modelo = F50, desgasteChasis = 10, desgasteRuedas = 0, velocidadMáxima = 65, tiempoCarrera = 0, apodos = [] }
+
+lamborghiniEq :: Auto
+lamborghiniEq = UnAuto { marca = Lamborghini, modelo = Diablo, desgasteChasis = 20, desgasteRuedas = 0, velocidadMáxima = 73, tiempoCarrera = 0, apodos = [] }
+
+-- b. Realizar una reparación en equipo
+precioReparacion :: Equipo -> Number
+precioReparacion equipo =
+  let desgastes = map desgasteChasis (autos equipo)
+      totalDesgaste = sum desgastes * 0.85 
+  in totalDesgaste * 0.85 * 500
+
+reparacion :: Auto -> Auto
+reparacion auto = auto { desgasteChasis = desgasteChasis auto * 0.15 }
+
+repararChasis :: Equipo -> Equipo
+repararChasis equipo
+  | precioReparacion equipo <= presupuesto equipo =
+      equipo {
+        presupuesto = presupuesto equipo - precioReparacion equipo,
+        autos = map reparacion (autos equipo)
+      }
+  | otherwise = equipo
+
+-- c. Optimizar autos en equipo
+optimizacion :: Equipo -> Equipo
+optimizacion equipo = equipoOptimizado
+  where
+    (autosOptim, presupuestoFinal) = optimizarAutos (autos equipo) (presupuesto equipo)
+    equipoOptimizado = equipo { autos = autosOptim, presupuesto = presupuestoFinal }
+
+optimizarAutos :: [Auto] -> Number -> ([Auto], Number)
+optimizarAutos [] presupuesto = ([], presupuesto)
+optimizarAutos (auto:resto) presupuesto
+  | costo <= presupuesto =
+      let autoMejorado = auto { velocidadMáxima = velocidadInicial * 1.2 }
+          (restoMejorado, presupuestoRestante) = optimizarAutos resto (presupuesto - costo)
+      in (autoMejorado : restoMejorado, presupuestoRestante)
+  | otherwise =
+      let (restoSinCambios, presupuestoRestante) = optimizarAutos resto presupuesto
+      in (auto : restoSinCambios, presupuestoRestante)
+  where
+    velocidadInicial = velocidadMáxima auto
+    costo = velocidadInicial * 100
+
+-- d. Ferrarizar
+
+-- 2. Costo total de reparación
+
+-- 3. Infinia
+-- a. Modelar el equipo Infinia
+-- b. Contestar que sucede si:
+--  i. Se realiza una reparación en equipo de ese equipo.
+--  ii. Se optimizan los autos de ese equipo.
+--  iii. Se ferrarizan sus autos.
+--  iv. Se quiere conocer el costo total de reparación del equipo.
+
+-- 4. Modificadores de tramos
+-- a.
+-- b.
+-- c.
+-- d.
+-- e.
+-- 5. Realizar la función que haga pasarPorTramo/2
+-- 6. Atravesando pistas
+-- a. Crear la vueltaALaManzana
+-- b. Crear la superPista
+-- c. Hacer la función peganLaVuelta/2
+-- 7. ¡¡Y llegaron las carreras!!
+-- a.
+-- b.
+-- c.
+-- d.

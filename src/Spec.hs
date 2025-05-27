@@ -7,6 +7,8 @@ correrTests :: IO ()
 correrTests = hspec $ do
   describe "Tests - Entrega 1" $ do
 
+  ---------------------------------------- ENTREGA 1 ----------------------------------------
+
     -- 2. Estado de salud del auto
 
     -- a. Tests de buenEstado
@@ -87,7 +89,7 @@ correrTests = hspec $ do
     it "Bautizar 'El diablo' a un auto marca Lamborghini, debe contener en sus apodos 'El diablo'" $ do
       "El diablo" `elem` apodos (bautizarAuto lamborghini "El diablo") `shouldBe` True
     it "Bautizar 'El diablo' a un auto marca Lamborghini sin apodos, sólo tiene el apodo 'El diablo'" $ do
-      bautizarAuto lamborghini { apodos = [] } "El diablo" `shouldBe` lamborghini { apodos =["El diablo"] }
+      bautizarAuto lamborghini { apodos = [] } "El diablo" `shouldBe` lamborghini { apodos = ["El diablo"] }
 
   -- e. Tests desarmadero
     it "Llevar a un desarmadero a un auto marca Fiat para cambiar por marca 'Tesla' modelo 'X', la marca es 'Tesla', el modelo es 'X' y sólo tiene el apodo 'Nunca Taxi'" $ do
@@ -97,11 +99,11 @@ correrTests = hspec $ do
 
   -- a. Tests de curvaPeligrosa y curvaTranca
     it "Transitar una curva peligrosa con un auto marca Ferrari, deja el desgaste de ruedas en 15 y mantiene el desgaste de chasis en 0" $ do
-      curvaPeligrosa ferrari `shouldBe` ferrari { desgasteRuedas = 15, desgasteChasis = 0, tiempoCarrera = sumaTiempo longitudPeligrosa (velocidadMáxima ferrari) }
+      curvaPeligrosa ferrari `shouldBe` ferrari { desgasteRuedas = 15, desgasteChasis = 0, tiempoCarrera = tiempoCarrera ferrari + sumaTiempo longitudPeligrosa (velocidadMáxima ferrari) }
     it "Transitar una curva peligrosa con un auto marca Peugeot, el tiempo en pista es de 15" $ do
       curvaPeligrosa peugeot `shouldBe` peugeot { desgasteRuedas = calculoDesgasteTramo (desgasteRuedas peugeot) longitudPeligrosa anguloPeligroso, tiempoCarrera = 15 }
     it "Transitar una curva tranca con un auto marca Ferrari, deja el desgaste de ruedas en 15 y mantiene el desgaste de chasis en 0" $ do
-      curvaTranca ferrari `shouldBe` ferrari { desgasteRuedas = 15, desgasteChasis = 0, tiempoCarrera = sumaTiempo longitudTranca (velocidadMáxima ferrari) }
+      curvaTranca ferrari `shouldBe` ferrari { desgasteRuedas = 15, desgasteChasis = 0, tiempoCarrera = tiempoCarrera ferrari + sumaTiempo longitudTranca (velocidadMáxima ferrari) }
     it "Transitar una curva tranca con un auto marca Peugeot, el tiempo en pista es de 27.5" $ do
       curvaTranca peugeot `shouldBe` peugeot { desgasteRuedas = calculoDesgasteTramo (desgasteRuedas peugeot) longitudTranca anguloTranca, tiempoCarrera = 27.5 }
 
@@ -125,14 +127,35 @@ correrTests = hspec $ do
 
   -- 5. Nivel de Joyez
 
-  -- Tests de nivelDeJoyez
+  -- a. Tests de nivelDeJoyez
     it "Un auto Ferrari, un auto Peugeot con un tiempo de carrera de 49 y un auto Peugeot con un tiempo de 50 deben tener un nivel de joyez de 3" $ do
       calcularNivelDeJoyez [ferrari, peugeot { tiempoCarrera = 49 }, peugeot { tiempoCarrera = 50 }] `shouldBe` 3
 
-  -- Tests de paraEntendidos
+  -- b. Tests de paraEntendidos
     it "Un grupo de autos con un auto Ferrari cuyo tiempo de carrera es de 201 y otro igual pero con un tiempo de 200 no es para entendidos" $ do
       paraEntendidos [ferrari { tiempoCarrera = 201 }, ferrari {tiempoCarrera = 200 }] `shouldBe` False
     it "Un grupo de autos con un auto Ferrari cuyo tiempo de carrera es de 200 y un auto Peugeot no es para entendidos" $ do
       paraEntendidos [ferrari { tiempoCarrera = 200 }, peugeot] `shouldBe` False
     it "Un grupo de autos con un auto Ferrari cuyo tiempo de carrera es de 200 y otro Lamborghini con tiempo también de 200 es para entendidos" $ do
       paraEntendidos [ferrari { tiempoCarrera = 200 }, lamborghini {tiempoCarrera = 200 }] `shouldBe` True
+
+  ---------------------------------------- ENTREGA 2 ----------------------------------------
+
+  -- 1. Equipos de competición
+
+  -- a. Tests para agregar autos a un equipo
+    it "Agregar un Ferrari con costo 65000 a un equipo con un presupuesto de 70000" $ do
+      --agregarAuto ferrari holaMundoTeam `shouldBe` UnEquipo { nombre = "HolaMundo", autos = [UnAuto { marca = Ferrari, modelo = F50, desgasteChasis = 0, desgasteRuedas = 0, velocidadMáxima = 65, tiempoCarrera = 0, apodos = ["La nave", "El fierro", "Ferrucho"] }], presupuesto = 5000 }
+      agregarAuto ferrari holaMundoTeam `shouldBe` UnEquipo { nombre = "HolaMundo", autos = [ferrari], presupuesto = 5000 }
+    it "Agregar un Fiat con costo 44000 a un equipo con un presupuesto de 50000 que ya tiene un Peugeot" $ do
+      agregarAuto fiat UnEquipo { nombre = "HolaMundo", autos = [peugeot], presupuesto = 50000 } `shouldBe` UnEquipo { nombre = "HolaMundo", autos = [peugeot, fiat], presupuesto = 6000 }
+    it "Agregar un Lamborghini con costo 73000 a un equipo con presupuesto 70000" $ do
+      agregarAuto lamborghini holaMundoTeam `shouldBe` UnEquipo { nombre = "HolaMundo", autos = [], presupuesto = 70000 }
+  
+  -- b. 
+  -- c. Tests para optimizar autos de un equipo
+    it "Un equipo con un ferrari, un lamborghini y un presupuesto de 20000 se optimiza quedando la velocidad maxima del ferrari en 65 y del lambo en 73" $ do
+      let equipoOptimizado = optimizacion equipo1
+      velocidadMáxima (autos equipoOptimizado !! 0) `shouldBe` 65 * 1.2  
+      velocidadMáxima (autos equipoOptimizado !! 1) `shouldBe` 73 * 1.2 
+      
