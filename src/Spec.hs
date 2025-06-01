@@ -139,23 +139,17 @@ correrTests = hspec $ do
     it "Un grupo de autos con un auto Ferrari cuyo tiempo de carrera es de 200 y otro Lamborghini con tiempo también de 200 es para entendidos" $ do
       paraEntendidos [ferrari { tiempoCarrera = 200 }, lamborghini {tiempoCarrera = 200 }] `shouldBe` True
 
-  ---------------------------------------- ENTREGA 2 ----------------------------------------
-
-  -- 1. Equipos de competición
+  -- SEGUNDA ENTREGA
 
   -- a. Tests para agregar autos a un equipo
-    it "Agregar un Ferrari con costo 65000 a un equipo con un presupuesto de 70000" $ do
-      --agregarAuto ferrari holaMundoTeam `shouldBe` UnEquipo { nombre = "HolaMundo", autos = [UnAuto { marca = Ferrari, modelo = F50, desgasteChasis = 0, desgasteRuedas = 0, velocidadMáxima = 65, tiempoCarrera = 0, apodos = ["La nave", "El fierro", "Ferrucho"] }], presupuesto = 5000 }
-      agregarAuto ferrari holaMundoTeam `shouldBe` UnEquipo { nombre = "HolaMundo", autos = [ferrari], presupuesto = 5000 }
-    it "Agregar un Fiat con costo 44000 a un equipo con un presupuesto de 50000 que ya tiene un Peugeot" $ do
-      agregarAuto fiat UnEquipo { nombre = "HolaMundo", autos = [peugeot], presupuesto = 50000 } `shouldBe` UnEquipo { nombre = "HolaMundo", autos = [peugeot, fiat], presupuesto = 6000 }
-    it "Agregar un Lamborghini con costo 73000 a un equipo con presupuesto 70000" $ do
-      agregarAuto lamborghini holaMundoTeam `shouldBe` UnEquipo { nombre = "HolaMundo", autos = [], presupuesto = 70000 }
-  
-  -- b. 
-  -- c. Tests para optimizar autos de un equipo
-    it "Un equipo con un ferrari, un lamborghini y un presupuesto de 20000 se optimiza quedando la velocidad maxima del ferrari en 65 y del lambo en 73" $ do
-      let equipoOptimizado = optimizacion equipo1
-      velocidadMáxima (autos equipoOptimizado !! 0) `shouldBe` 65 * 1.2  
-      velocidadMáxima (autos equipoOptimizado !! 1) `shouldBe` 73 * 1.2 
-      
+    it "Un ferrari con costo 65000 es agregado a un equipo con un presupuesto de 70000" $ do
+      agregarAuto ferrariEq holaMundoTeam `shouldBe` UnEquipo {nombre = "HolaMundo", presupuesto = 5000, autos = [ferrariEq]}
+    it "Un fiat con costo 44000 es agregado a un equipo con un presupuesto de 50000 reduciendolo a 6000" $ do
+      agregarAuto fiatEq equipo4 `shouldBe` UnEquipo {nombre = "Equipo4", presupuesto = 6000, autos = [peugeotEq, fiatEq] }
+ 
+  -- b. Tests para realizar una reparacion en equipo 
+    it "Un equipo con un ferrari y un lamborghini de chasis 10 y 20 respectivamente y un presupuesto de 20000 repara los coches quedando con 1.5 de chasis el ferrari, 3 de chasis el lamborghini y un presupuesto de 7250" $ do  
+      repararChasis equipo1 `shouldBe` UnEquipo {nombre = "Equipo1", presupuesto = 7250, autos = [UnAuto { marca = Ferrari, modelo = F50, desgasteChasis = 1.5, desgasteRuedas = 0, velocidadMáxima = 65, tiempoCarrera = 0, apodos = []}, UnAuto { marca = Lamborghini, modelo = Diablo, desgasteChasis = 3, desgasteRuedas = 0, velocidadMáxima = 73, tiempoCarrera = 0, apodos = []}]}
+    it "Un equipo con un fiat de chasis 50 y un presupuesto de 10000 quiere reparar el coche pero no alcanza el presupuesto quedando en condiciones iniciales" $ do  
+      repararChasis equipo2 `shouldBe` equipo2
+

@@ -193,18 +193,18 @@ tiempoValido auto = tiempoCarrera auto <= 200
 paraEntendidos :: [Auto] -> Bool
 paraEntendidos autos = all buenEstado autos && all tiempoValido autos
 
----------------------------------------- ENTREGA 2 ----------------------------------------
+--------- ENTREGA 2 -----------------
 
 -- 1. Equipos de competición
 data Equipo = UnEquipo { 
   nombre :: String,
-  autos :: [Auto],
-  presupuesto :: Number
+  presupuesto :: Number,
+  autos :: [Auto]
 } deriving (Show, Eq) 
 
 -- a. Modelar un equipo de competición
 holaMundoTeam :: Equipo
-holaMundoTeam = UnEquipo { nombre = "HolaMundo", autos = [], presupuesto = 70000 }
+holaMundoTeam = UnEquipo { nombre = "HolaMundo", presupuesto = 70000, autos = [] }
 
 costoInscripcion :: Auto -> Number
 costoInscripcion auto = velocidadMáxima auto * 1000
@@ -212,18 +212,20 @@ costoInscripcion auto = velocidadMáxima auto * 1000
 -- Agregar un auto al equipo si el costo no supera al presupuesto
 agregarAuto :: Auto -> Equipo -> Equipo
 agregarAuto nuevoAuto equipo  
-  | costoInscripcion nuevoAuto <= presupuesto equipo = equipo {  autos = autos equipo ++ [nuevoAuto], presupuesto = presupuesto equipo - costoInscripcion nuevoAuto }
+  | costoInscripcion nuevoAuto <= presupuesto equipo = equipo { presupuesto = presupuesto equipo - costoInscripcion nuevoAuto, autos = autos equipo ++ [nuevoAuto]}
   | otherwise = equipo
 
 equipo1 :: Equipo
-equipo1 = UnEquipo { nombre = "Equipo1", autos = [ferrariEq, lamborghiniEq], presupuesto = 20000 }
+equipo1 = UnEquipo { nombre = "Equipo1", presupuesto = 20000, autos = [ferrariEq, lamborghiniEq] }
 equipo2 :: Equipo
-equipo2 = UnEquipo { nombre = "Equipo2", autos = [fiatEq], presupuesto = 10000 }
+equipo2 = UnEquipo { nombre = "Equipo2", presupuesto = 10000, autos = [fiatEq] }
 equipo3 :: Equipo
-equipo3 = UnEquipo { nombre = "Equipo3", autos = [ferrariEq, lamborghiniEq], presupuesto = 10000 }
+equipo3 = UnEquipo { nombre = "Equipo3", presupuesto = 10000, autos = [ferrariEq, lamborghiniEq] }
+equipo4 :: Equipo
+equipo4 = UnEquipo { nombre = "Equipo4", presupuesto = 50000, autos = [peugeotEq] }
 
 fiatEq :: Auto
-fiatEq = UnAuto { marca = Fiat, modelo = F600, desgasteChasis = 50, desgasteRuedas = 0, velocidadMáxima = 33, tiempoCarrera = 0, apodos = [] }
+fiatEq = UnAuto { marca = Fiat, modelo = F600, desgasteChasis = 50, desgasteRuedas = 0, velocidadMáxima = 44, tiempoCarrera = 0, apodos = [] }
 
 ferrariEq :: Auto
 ferrariEq = UnAuto { marca = Ferrari, modelo = F50, desgasteChasis = 10, desgasteRuedas = 0, velocidadMáxima = 65, tiempoCarrera = 0, apodos = [] }
@@ -231,49 +233,92 @@ ferrariEq = UnAuto { marca = Ferrari, modelo = F50, desgasteChasis = 10, desgast
 lamborghiniEq :: Auto
 lamborghiniEq = UnAuto { marca = Lamborghini, modelo = Diablo, desgasteChasis = 20, desgasteRuedas = 0, velocidadMáxima = 73, tiempoCarrera = 0, apodos = [] }
 
+peugeotEq :: Auto
+peugeotEq = UnAuto { marca = Peugeot, modelo = P504, desgasteChasis = 0, desgasteRuedas = 0, velocidadMáxima = 80, tiempoCarrera = 0, apodos = [] }
+
 -- b. Realizar una reparación en equipo
+repararChasis :: Equipo -> Equipo
+repararChasis equipo
+  | precioReparacion equipo <= presupuesto equipo = equipo { presupuesto = presupuesto equipo - precioReparacion equipo, autos = map reparacion (autos equipo)}
+  | otherwise = equipo
+
 precioReparacion :: Equipo -> Number
-precioReparacion equipo =
-  let desgastes = map desgasteChasis (autos equipo)
-      totalDesgaste = sum desgastes * 0.85 
-  in totalDesgaste * 0.85 * 500
+precioReparacion equipo = calcularPrecio (autos equipo)
+
+calcularPrecio :: [Auto] -> Number
+calcularPrecio  = foldr (\ auto -> (+) (desgasteChasis auto * 0.85 * 500)) 0
 
 reparacion :: Auto -> Auto
 reparacion auto = auto { desgasteChasis = desgasteChasis auto * 0.15 }
 
-repararChasis :: Equipo -> Equipo
-repararChasis equipo
-  | precioReparacion equipo <= presupuesto equipo =
-      equipo {
-        presupuesto = presupuesto equipo - precioReparacion equipo,
-        autos = map reparacion (autos equipo)
-      }
-  | otherwise = equipo
-
 -- c. Optimizar autos en equipo
 optimizacion :: Equipo -> Equipo
-optimizacion equipo = equipoOptimizado
-  where
-    (autosOptim, presupuestoFinal) = optimizarAutos (autos equipo) (presupuesto equipo)
-    equipoOptimizado = equipo { autos = autosOptim, presupuesto = presupuestoFinal }
+optimizacion equipo = optimizar (autos equipo) (presupuesto equipo) (nombre equipo)
 
-optimizarAutos :: [Auto] -> Number -> ([Auto], Number)
-optimizarAutos [] presupuesto = ([], presupuesto)
-optimizarAutos (auto:resto) presupuesto
-  | costo <= presupuesto =
-      let autoMejorado = auto { velocidadMáxima = velocidadInicial * 1.2 }
-          (restoMejorado, presupuestoRestante) = optimizarAutos resto (presupuesto - costo)
-      in (autoMejorado : restoMejorado, presupuestoRestante)
-  | otherwise =
-      let (restoSinCambios, presupuestoRestante) = optimizarAutos resto presupuesto
-      in (auto : restoSinCambios, presupuestoRestante)
-  where
-    velocidadInicial = velocidadMáxima auto
-    costo = velocidadInicial * 100
+optimizar :: [Auto] -> Number -> String -> Equipo
+optimizar [] presupuesto nombre = UnEquipo nombre presupuesto []
+optimizar (auto:autos) presupuesto nombre
+  | velocidadMáxima auto * 100 <= presupuesto = casoOptimizado (auto:autos) presupuesto nombre
+  | otherwise = casoNoOptimizado (auto:autos) presupuesto nombre
+
+casoOptimizado :: [Auto] -> Number -> String -> Equipo
+casoOptimizado (auto:autos) presupuesto nombre =
+  agregarAutoAlEquipo (aumentarVelocidad auto) (optimizar autos (presupuesto - velocidadMáxima auto * 100) nombre)
+
+casoNoOptimizado :: [Auto] -> Number -> String -> Equipo
+casoNoOptimizado (auto:autos) presupuesto nombre =
+  agregarAutoAlEquipo auto (optimizar autos presupuesto nombre)
+
+agregarAutoAlEquipo :: Auto -> Equipo -> Equipo
+agregarAutoAlEquipo auto (UnEquipo nombre presupuesto lista) = UnEquipo nombre presupuesto (auto : lista)
+
+aumentarVelocidad :: Auto -> Auto
+aumentarVelocidad auto = auto { velocidadMáxima = velocidadMáxima auto * 1.2 }
 
 -- d. Ferrarizar
+ferrarizar :: Equipo -> Equipo
+ferrarizar equipo = remarcar (autos equipo) (presupuesto equipo) (nombre equipo)
+
+remarcar :: [Auto] -> Number -> String -> Equipo
+remarcar [] presupuesto nombre = UnEquipo nombre presupuesto []
+remarcar (auto:autos) presupuesto nombre
+  | marca auto /= Ferrari && presupuesto >= 3500 = añadirAuto (cambiarMarca auto) (remarcar autos (presupuesto - 3500) nombre)
+  | otherwise = añadirAuto auto (remarcar autos presupuesto nombre)
+
+cambiarMarca :: Auto -> Auto
+cambiarMarca auto = auto { marca = Ferrari, modelo = F50 }
+
+añadirAuto :: Auto -> Equipo -> Equipo
+añadirAuto auto (UnEquipo nombre presupuesto autos) = UnEquipo nombre presupuesto (auto : autos)
 
 -- 2. Costo total de reparación
+
+costoReparacion :: Equipo -> Number
+costoReparacion equipo = costoAutos (autos equipo)
+
+costoAutos :: [Auto] -> Number
+costoAutos = foldr (\ auto -> (+) (desgasteChasis auto * 500 * 0.85)) 0 
+
+-- 3. Infinia
+
+-- a. Modelar el equipo Infinia
+autoFerrariConVelocidad :: Number -> Auto
+autoFerrariConVelocidad n = UnAuto Ferrari F50 1 0 (n * 10) 0 []
+
+autosInfinitos :: [Auto]
+autosInfinitos = map autoFerrariConVelocidad [1..]
+
+infinia :: Equipo
+infinia = UnEquipo "Infinia" 5000 autosInfinitos
+
+--Contestar qué sucede si:
+--i. Se realiza una reparación en equipo de ese equipo.
+--ii. Se optimizan los autos de ese equipo.
+--iii. Se ferrarizan sus autos.
+--iv. Se quiere conocer el costo total de reparación del equipo.
+
+-- 3.b - RESPUESTAS
+-- 3.b.i:  
 
 -- 3. Infinia
 -- a. Modelar el equipo Infinia
