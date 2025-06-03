@@ -203,7 +203,6 @@ data Equipo = UnEquipo {
 } deriving (Show, Eq) 
 
 data Accion = Inscribir | Reparar | Optimizar | Ferrarizar deriving (Show, Ord, Eq)
-data Modificador = Boxes | Mojado | Ripio | Obstrucción | Turbo deriving (Show, Ord, Eq)
 
 -- a. Modelar un equipo de competición y agregar un auto a un equipo
 holaMundoTeam :: Equipo
@@ -215,7 +214,7 @@ agregarAuto equipo auto
   | otherwise = equipo
 
 tienePresupuestoParaAccion :: Accion -> Auto -> Number -> Bool
-tienePresupuestoParaAccion accion auto presupuestoEquipo = ((< presupuestoEquipo) . calcularCostoAccion accion) auto
+tienePresupuestoParaAccion accion auto presupuestoEquipo = ((<presupuestoEquipo) . calcularCostoAccion accion) auto
 
 calcularCostoAccion :: Accion -> Auto -> Number
 calcularCostoAccion Inscribir auto = velocidadMáxima auto * 1000
@@ -285,79 +284,70 @@ generarFerrarisInfinitos multiplicadorVelocidad = generarFerrari multiplicadorVe
   -- iv. Se quiere conocer el costo total de reparación del equipo.
     -- Va a entrar en un bucle infinito, por lo que el costo total de reparación nunca finalizará de calcularse debido a que la lista de autos es infinita.
 
--- 4. Modificadores de tramos
-
--- data Modificador = Boxes | Mojado | Ripio | Obstrucción | Turbo deriving (Show, Ord, Eq)
-
--- a. Tramo con boxes
-
-aplicarModificador :: Modificador -> Auto -> Auto
-aplicarModificador Boxes auto
-  | not (buenEstado auto) = (repararAuto . aplicarPenalidad auto ) 10
-  | otherwise = auto
-
-aplicarModificador Boxes auto
-  | not (buenEstado auto) = (repararAuto . aplicarPenalidad auto ) 10
-  | otherwise = auto
-
--- Pasar tramo con boxes
-
-tramoConBoxes :: Auto -> Auto
-tramoConBoxes auto = aplicarModificador Boxes (curvaTranca auto)
-tramoConBoxes auto = aplicarModificador Boxes (curvaPeligrosa auto)
-tramoConBoxes auto = aplicarModificador Boxes (tramoRectoClassic auto)
-tramoConBoxes auto = aplicarModificador Boxes (tramito auto)
-tramoConBoxes auto = aplicarModificador Boxes (zigZagLoco auto)
-
+-- 4. Modificadores de tramos                       TRAMOS: 1. TRAMITO 2. CURVA TRANCA 3. CURVA PELIGROSA 4. ZIG ZAG LOCO 5. RULO CLASICO 6. DESEO DE MUERTE 7. TRAMO RECTO CLASSIC 8. CASI CURVA
 
 type Tramo = Auto -> Auto
 
-pasarAutoPorTramo :: Modificador -> Auto -> Tramo -> Auto
---pasarAutoPorTramo _ auto tramo = tramo auto
-pasarAutoPorTramo Boxes auto tramo
-  | not (buenEstado auto) = (repararAuto . aplicarPenalidad (tramo auto) ) 10
+-- a. Tramo con boxes
+tramoConBoxes :: Tramo -> Auto -> Auto 
+tramoConBoxes tramo auto
+  | not (buenEstado (tramo auto)) = repararAuto (aplicarPenalidad (tramo auto) 10)
   | otherwise = tramo auto
-pasarAutoPorTramo Mojado auto tramo = aplicarPenalidad (tramo auto) ((tiempoCarrera (tramo auto) - tiempoCarrera auto) * 0.5)
---pasarAutoPorTramo Ripio auto tramo = aplicarPenalidad (tramo (tramo auto)) 
-
-pasarPorTramos :: Auto -> [(Tramo, [Modificador])] -> Auto
-pasarPorTramos auto [] = auto
-pasarPorTramos auto ((tramo, modificadores):xs) = pasarPorTramos (pasarAutoPorTramo tramo modificadores auto) xs
-
-pasarAutoPorTramo :: Tramo -> [Modificador] -> Auto  -> Auto
-pasarAutoPorTramo tramo [] auto = tramo auto
-pasarAutoPorTramo tramo (x:xs) auto = pasarAutoPorTramo tramo xs (aplicarModificador x auto tramo)
-
-aplicarModificador :: Modificador -> Auto -> Tramo -> Auto
-aplicarModificador Boxes auto tramo
-  | buenEstado auto = aplicarPenalidad (tramo auto) 10
-  | otherwise = tramo auto
-aplicarModificador Mojado auto tramo = aplicarPenalidad (tramo auto) ((tiempoCarrera (tramo auto) - tiempoCarrera auto) / 2)
-
-
--- aplicarModificador Mojado
 
 -- b. Tramo mojado
-
--- aplicarModificador Mojado auto = auto { tiempoCarrera = tiempoCarrera auto * 1.5 }
+tramoMojado :: Tramo -> Auto -> Auto 
+tramoMojado tramo auto = tramo auto { tiempoCarrera = tiempoCarrera (tramo auto) * 1.5 }
 
 -- c. Tramo con ripio
-
+tramoConRipio :: Tramo -> Auto -> Auto
+tramoConRipio tramo auto = tramo auto { desgasteChasis = desgasteChasis (tramo auto) * 2, desgasteRuedas = desgasteRuedas (tramo auto) * 2, tiempoCarrera = tiempoCarrera (tramo auto) * 2 }
 
 -- d. Tramo con alguna obstrucción
+tramoConObstruccion :: Number -> Tramo -> Auto -> Auto
+tramoConObstruccion metrosObstruidos tramo auto = tramo auto { desgasteRuedas = desgasteRuedas (tramo auto) + (metrosObstruidos * 2) }
 
 -- e. Tramo con turbo
+tramoTurboDurante :: Tramo -> Auto -> Auto
+tramoTurboDurante tramo auto = tramo auto {velocidadMáxima = velocidadMáxima auto * 2}
+
+tramoTurboDespues :: Tramo -> Auto -> Auto
+tramoTurboDespues tramo auto = tramo auto {velocidadMáxima = velocidadMáxima auto / 2}
+
+--tramoConTurbo :: Tramo -> Auto -> Auto
+--tramoConTurbo tramo auto = (tramo (auto { velocidadMáxima = velocidadMáxima auto * 2 })) { velocidadMáxima = velocidadMáxima auto }
 
 -- 5. Realizar la función que haga pasarPorTramo/2
+pasarPorTramo :: Tramo -> Auto -> Auto
+pasarPorTramo tramo auto
+  | noDaMas (tramo auto) = auto
+  | not (noDaMas (tramo auto)) = tramo auto
 
-{-
-pasarPorTramo :: Auto -> Tramo -> Auto
-pasarPorTramo auto tramo = not (noDaMas (tramo auto))
--}
+-- pasarPorTramo (curvaTranca con Ripio) auto
 
 -- 6. Atravesando pistas
 
+data Pista = UnaPista {
+  nombrePista :: String,
+  pais :: String,
+  precioBaseEntrada :: Number,
+  tramos :: [Tramo]
+} deriving (Show, Ord, Eq)
+
 -- a. Crear la vueltaALaManzana
+
+longitudTramoRecto, longitudCurva, anguloCurva :: Number
+longitudTramoRecto = 130
+longitudCurva = 13
+anguloCurva = 90 --Revisar esto
+
+tramoRecto :: Tramo
+tramoRecto auto = auto { desgasteChasis = afectarChasis auto longitudTramoRecto , tiempoCarrera = tiempoAgregadoPorTramoRecto auto longitudTramoRecto }
+
+curva :: Tramo
+curva auto = auto { desgasteRuedas = calculoDesgasteTramo (desgasteRuedas auto) longitudCurva 90, tiempoCarrera = tiempoCarrera auto + sumaTiempo longitudCurva (velocidadMáxima auto) }
+
+vueltaALaManzana :: Pista
+vueltaALaManzana = UnaPista { nombrePista = "La manzana", pais = "Italia", precioBaseEntrada = 30, tramos = [tramoRecto, curva, tramoRecto, curva, tramoRecto, curva, tramoRecto, curva] }
 
 -- b. Crear la superPista
 
