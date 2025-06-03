@@ -198,149 +198,186 @@ paraEntendidos autos = all buenEstado autos && all tiempoValido autos
 -- 1. Equipos de competición
 data Equipo = UnEquipo { 
   nombre :: String,
-  presupuesto :: Number,
-  autos :: [Auto]
+  autos :: [Auto],
+  presupuesto :: Number
 } deriving (Show, Eq) 
 
--- a. Modelar un equipo de competición
+data Accion = Inscribir | Reparar | Optimizar | Ferrarizar deriving (Show, Ord, Eq)
+data Modificador = Boxes | Mojado | Ripio | Obstrucción | Turbo deriving (Show, Ord, Eq)
+
+-- a. Modelar un equipo de competición y agregar un auto a un equipo
 holaMundoTeam :: Equipo
-holaMundoTeam = UnEquipo { nombre = "HolaMundo", presupuesto = 70000, autos = [] }
+holaMundoTeam = UnEquipo { nombre = "HolaMundo", autos = [], presupuesto = 70000 }
 
-costoInscripcion :: Auto -> Number
-costoInscripcion auto = velocidadMáxima auto * 1000
-
--- Agregar un auto al equipo si el costo no supera al presupuesto
-agregarAuto :: Auto -> Equipo -> Equipo
-agregarAuto nuevoAuto equipo  
-  | costoInscripcion nuevoAuto <= presupuesto equipo = equipo { presupuesto = presupuesto equipo - costoInscripcion nuevoAuto, autos = autos equipo ++ [nuevoAuto]}
+agregarAuto :: Equipo -> Auto -> Equipo
+agregarAuto equipo auto
+  | tienePresupuestoParaAccion Inscribir auto (presupuesto equipo) = equipo { autos = autos equipo ++ [auto], presupuesto = presupuesto equipo - calcularCostoAccion Inscribir auto }
   | otherwise = equipo
 
-equipo1 :: Equipo
-equipo1 = UnEquipo { nombre = "Equipo1", presupuesto = 20000, autos = [ferrariEq, lamborghiniEq] }
-equipo2 :: Equipo
-equipo2 = UnEquipo { nombre = "Equipo2", presupuesto = 10000, autos = [fiatEq] }
-equipo3 :: Equipo
-equipo3 = UnEquipo { nombre = "Equipo3", presupuesto = 10000, autos = [ferrariEq, lamborghiniEq] }
-equipo4 :: Equipo
-equipo4 = UnEquipo { nombre = "Equipo4", presupuesto = 50000, autos = [peugeotEq] }
+tienePresupuestoParaAccion :: Accion -> Auto -> Number -> Bool
+tienePresupuestoParaAccion accion auto presupuestoEquipo = ((< presupuestoEquipo) . calcularCostoAccion accion) auto
 
-fiatEq :: Auto
-fiatEq = UnAuto { marca = Fiat, modelo = F600, desgasteChasis = 50, desgasteRuedas = 0, velocidadMáxima = 44, tiempoCarrera = 0, apodos = [] }
+calcularCostoAccion :: Accion -> Auto -> Number
+calcularCostoAccion Inscribir auto = velocidadMáxima auto * 1000
+calcularCostoAccion Optimizar auto = velocidadMáxima auto * 100
+calcularCostoAccion Reparar auto = ((*500) . puntosChasisReparar) (desgasteChasis auto)
+calcularCostoAccion Ferrarizar auto 
+  | marca auto == Ferrari = 0
+  | otherwise = 3500
 
-ferrariEq :: Auto
-ferrariEq = UnAuto { marca = Ferrari, modelo = F50, desgasteChasis = 10, desgasteRuedas = 0, velocidadMáxima = 65, tiempoCarrera = 0, apodos = [] }
+puntosChasisReparar :: Number -> Number
+puntosChasisReparar desgasteChasis = desgasteChasis * 0.85
 
-lamborghiniEq :: Auto
-lamborghiniEq = UnAuto { marca = Lamborghini, modelo = Diablo, desgasteChasis = 20, desgasteRuedas = 0, velocidadMáxima = 73, tiempoCarrera = 0, apodos = [] }
+-- b. c. d. -> Reparar, optimizar y ferrarizar en equipo
+realizarAccionEnEquipo :: Accion -> Equipo -> Equipo
+realizarAccionEnEquipo accion equipo = equipo { autos = realizarAccionAutos accion (presupuesto equipo) (autos equipo), presupuesto = determinarPresupuestoRestante accion (presupuesto equipo) (autos equipo) } 
 
-peugeotEq :: Auto
-peugeotEq = UnAuto { marca = Peugeot, modelo = P504, desgasteChasis = 0, desgasteRuedas = 0, velocidadMáxima = 80, tiempoCarrera = 0, apodos = [] }
+determinarPresupuestoRestante :: Accion -> Number -> [Auto] -> Number
+determinarPresupuestoRestante _ presupuesto [] = presupuesto
+determinarPresupuestoRestante accion presupuesto (x:xs)
+  | tienePresupuestoParaAccion accion x presupuesto = determinarPresupuestoRestante accion (presupuesto - calcularCostoAccion accion x) xs
+  | otherwise = presupuesto
 
--- b. Realizar una reparación en equipo
-repararChasis :: Equipo -> Equipo
-repararChasis equipo
-  | precioReparacion equipo <= presupuesto equipo = equipo { presupuesto = presupuesto equipo - precioReparacion equipo, autos = map reparacion (autos equipo)}
-  | otherwise = equipo
+realizarAccionAutos :: Accion -> Number -> [Auto] -> [Auto]
+realizarAccionAutos _ presupuesto [] = []
+realizarAccionAutos accion presupuesto (x:xs)
+  | tienePresupuestoParaAccion accion x presupuesto = aplicarAccion accion x : realizarAccionAutos accion (presupuesto - calcularCostoAccion accion x) xs
+  | otherwise = x:xs
 
-precioReparacion :: Equipo -> Number
-precioReparacion equipo = calcularPrecio (autos equipo)
+aplicarAccion :: Accion -> Auto -> Auto
+aplicarAccion Reparar auto = repararAuto auto 
+aplicarAccion Optimizar auto = ponerNitro auto
+aplicarAccion Ferrarizar auto
+  | marca auto == Ferrari = auto
+  | otherwise = desarmadero auto Ferrari F50
 
-calcularPrecio :: [Auto] -> Number
-calcularPrecio  = foldr (\ auto -> (+) (desgasteChasis auto * 0.85 * 500)) 0
+-- 2. Calcular costo accion total
 
-reparacion :: Auto -> Auto
-reparacion auto = auto { desgasteChasis = desgasteChasis auto * 0.15 }
+calcularCostoReparacionTotal :: Equipo -> Number
+calcularCostoReparacionTotal  = calcularCostoAccionTotal Reparar 
 
--- c. Optimizar autos en equipo
-optimizacion :: Equipo -> Equipo
-optimizacion equipo = optimizar (autos equipo) (presupuesto equipo) (nombre equipo)
-
-optimizar :: [Auto] -> Number -> String -> Equipo
-optimizar [] presupuesto nombre = UnEquipo nombre presupuesto []
-optimizar (auto:autos) presupuesto nombre
-  | velocidadMáxima auto * 100 <= presupuesto = casoOptimizado (auto:autos) presupuesto nombre
-  | otherwise = casoNoOptimizado (auto:autos) presupuesto nombre
-
-casoOptimizado :: [Auto] -> Number -> String -> Equipo
-casoOptimizado (auto:autos) presupuesto nombre =
-  agregarAutoAlEquipo (aumentarVelocidad auto) (optimizar autos (presupuesto - velocidadMáxima auto * 100) nombre)
-
-casoNoOptimizado :: [Auto] -> Number -> String -> Equipo
-casoNoOptimizado (auto:autos) presupuesto nombre =
-  agregarAutoAlEquipo auto (optimizar autos presupuesto nombre)
-
-agregarAutoAlEquipo :: Auto -> Equipo -> Equipo
-agregarAutoAlEquipo auto (UnEquipo nombre presupuesto lista) = UnEquipo nombre presupuesto (auto : lista)
-
-aumentarVelocidad :: Auto -> Auto
-aumentarVelocidad auto = auto { velocidadMáxima = velocidadMáxima auto * 1.2 }
-
--- d. Ferrarizar
-ferrarizar :: Equipo -> Equipo
-ferrarizar equipo = remarcar (autos equipo) (presupuesto equipo) (nombre equipo)
-
-remarcar :: [Auto] -> Number -> String -> Equipo
-remarcar [] presupuesto nombre = UnEquipo nombre presupuesto []
-remarcar (auto:autos) presupuesto nombre
-  | marca auto /= Ferrari && presupuesto >= 3500 = añadirAuto (cambiarMarca auto) (remarcar autos (presupuesto - 3500) nombre)
-  | otherwise = añadirAuto auto (remarcar autos presupuesto nombre)
-
-cambiarMarca :: Auto -> Auto
-cambiarMarca auto = auto { marca = Ferrari, modelo = F50 }
-
-añadirAuto :: Auto -> Equipo -> Equipo
-añadirAuto auto (UnEquipo nombre presupuesto autos) = UnEquipo nombre presupuesto (auto : autos)
-
--- 2. Costo total de reparación
-
-costoReparacion :: Equipo -> Number
-costoReparacion equipo = costoAutos (autos equipo)
-
-costoAutos :: [Auto] -> Number
-costoAutos = foldr (\ auto -> (+) (desgasteChasis auto * 500 * 0.85)) 0 
+calcularCostoAccionTotal :: Accion -> Equipo -> Number
+calcularCostoAccionTotal accion equipo = foldr ((+) . calcularCostoAccion accion) 0 (autos equipo)
 
 -- 3. Infinia
 
 -- a. Modelar el equipo Infinia
-autoFerrariConVelocidad :: Number -> Auto
-autoFerrariConVelocidad n = UnAuto Ferrari F50 1 0 (n * 10) 0 []
+infinia :: Equipo 
+infinia = UnEquipo { nombre = "Infinia", autos = generarFerrarisInfinitos 1, presupuesto = 5000 }
 
-autosInfinitos :: [Auto]
-autosInfinitos = map autoFerrariConVelocidad [1..]
+generarFerrari :: Number -> Auto
+generarFerrari multiplicadorVelocidad = ferrari { velocidadMáxima = velocidadMáxima ferrari * multiplicadorVelocidad }
 
-infinia :: Equipo
-infinia = UnEquipo "Infinia" 5000 autosInfinitos
+generarFerrarisInfinitos :: Number -> [Auto]
+generarFerrarisInfinitos multiplicadorVelocidad = generarFerrari multiplicadorVelocidad : generarFerrarisInfinitos (multiplicadorVelocidad + 1)
 
---Contestar qué sucede si:
---i. Se realiza una reparación en equipo de ese equipo.
---ii. Se optimizan los autos de ese equipo.
---iii. Se ferrarizan sus autos.
---iv. Se quiere conocer el costo total de reparación del equipo.
-
--- 3.b - RESPUESTAS
--- 3.b.i:  
-
--- 3. Infinia
--- a. Modelar el equipo Infinia
 -- b. Contestar que sucede si:
---  i. Se realiza una reparación en equipo de ese equipo.
---  ii. Se optimizan los autos de ese equipo.
---  iii. Se ferrarizan sus autos.
---  iv. Se quiere conocer el costo total de reparación del equipo.
+  
+  -- i. Se realiza una reparación en equipo de ese equipo.
+    -- Se reparan tantos autos como el presupuesto lo permita, es decir, hasta que el presupuesto sea menor al costo de la reparación.
+  
+  -- ii. Se optimizan los autos de ese equipo.
+    -- Se optimizan tantos autos como el presupuesto lo permita, es decir, hasta que el presupuesto sea menor al costo de la optimización.
+  
+  -- iii. Se ferrarizan sus autos.
+    -- Se ferrarizan tantos autos como el presupuesto lo permita, es decir, hasta que el presupuesto sea menor al costo de la ferrarización.
+  
+  -- iv. Se quiere conocer el costo total de reparación del equipo.
+    -- Va a entrar en un bucle infinito, por lo que el costo total de reparación nunca finalizará de calcularse debido a que la lista de autos es infinita.
 
 -- 4. Modificadores de tramos
--- a.
--- b.
--- c.
--- d.
--- e.
+
+-- data Modificador = Boxes | Mojado | Ripio | Obstrucción | Turbo deriving (Show, Ord, Eq)
+
+-- a. Tramo con boxes
+
+aplicarModificador :: Modificador -> Auto -> Auto
+aplicarModificador Boxes auto
+  | not (buenEstado auto) = (repararAuto . aplicarPenalidad auto ) 10
+  | otherwise = auto
+
+aplicarModificador Boxes auto
+  | not (buenEstado auto) = (repararAuto . aplicarPenalidad auto ) 10
+  | otherwise = auto
+
+-- Pasar tramo con boxes
+
+tramoConBoxes :: Auto -> Auto
+tramoConBoxes auto = aplicarModificador Boxes (curvaTranca auto)
+tramoConBoxes auto = aplicarModificador Boxes (curvaPeligrosa auto)
+tramoConBoxes auto = aplicarModificador Boxes (tramoRectoClassic auto)
+tramoConBoxes auto = aplicarModificador Boxes (tramito auto)
+tramoConBoxes auto = aplicarModificador Boxes (zigZagLoco auto)
+
+
+type Tramo = Auto -> Auto
+
+pasarAutoPorTramo :: Modificador -> Auto -> Tramo -> Auto
+--pasarAutoPorTramo _ auto tramo = tramo auto
+pasarAutoPorTramo Boxes auto tramo
+  | not (buenEstado auto) = (repararAuto . aplicarPenalidad (tramo auto) ) 10
+  | otherwise = tramo auto
+pasarAutoPorTramo Mojado auto tramo = aplicarPenalidad (tramo auto) ((tiempoCarrera (tramo auto) - tiempoCarrera auto) * 0.5)
+--pasarAutoPorTramo Ripio auto tramo = aplicarPenalidad (tramo (tramo auto)) 
+
+pasarPorTramos :: Auto -> [(Tramo, [Modificador])] -> Auto
+pasarPorTramos auto [] = auto
+pasarPorTramos auto ((tramo, modificadores):xs) = pasarPorTramos (pasarAutoPorTramo tramo modificadores auto) xs
+
+pasarAutoPorTramo :: Tramo -> [Modificador] -> Auto  -> Auto
+pasarAutoPorTramo tramo [] auto = tramo auto
+pasarAutoPorTramo tramo (x:xs) auto = pasarAutoPorTramo tramo xs (aplicarModificador x auto tramo)
+
+aplicarModificador :: Modificador -> Auto -> Tramo -> Auto
+aplicarModificador Boxes auto tramo
+  | buenEstado auto = aplicarPenalidad (tramo auto) 10
+  | otherwise = tramo auto
+aplicarModificador Mojado auto tramo = aplicarPenalidad (tramo auto) ((tiempoCarrera (tramo auto) - tiempoCarrera auto) / 2)
+
+
+-- aplicarModificador Mojado
+
+-- b. Tramo mojado
+
+-- aplicarModificador Mojado auto = auto { tiempoCarrera = tiempoCarrera auto * 1.5 }
+
+-- c. Tramo con ripio
+
+
+-- d. Tramo con alguna obstrucción
+
+-- e. Tramo con turbo
+
 -- 5. Realizar la función que haga pasarPorTramo/2
+
+{-
+pasarPorTramo :: Auto -> Tramo -> Auto
+pasarPorTramo auto tramo = not (noDaMas (tramo auto))
+-}
+
 -- 6. Atravesando pistas
+
 -- a. Crear la vueltaALaManzana
+
 -- b. Crear la superPista
+
 -- c. Hacer la función peganLaVuelta/2
+
 -- 7. ¡¡Y llegaron las carreras!!
--- a.
--- b.
+
+-- a. Modelar una carrera
+
+-- b. Representar el tourBuenosAires
+
 -- c.
+
+  --i. El auto ganador luego de todas las vueltas de la carrera.
+    --
+  --ii. El tiempo total del segundo.
+    --
+  --iii. El tiempo parcial tras 2 vueltas del primer auto.
+    --
+  --iv. Cantidad de autos que terminaron la carrera.
+    --
+
 -- d.

@@ -141,15 +141,43 @@ correrTests = hspec $ do
 
   -- SEGUNDA ENTREGA
 
-  -- a. Tests para agregar autos a un equipo
-    it "Un ferrari con costo 65000 es agregado a un equipo con un presupuesto de 70000" $ do
-      agregarAuto ferrariEq holaMundoTeam `shouldBe` UnEquipo {nombre = "HolaMundo", presupuesto = 5000, autos = [ferrariEq]}
-    it "Un fiat con costo 44000 es agregado a un equipo con un presupuesto de 50000 reduciendolo a 6000" $ do
-      agregarAuto fiatEq equipo4 `shouldBe` UnEquipo {nombre = "Equipo4", presupuesto = 6000, autos = [peugeotEq, fiatEq] }
- 
-  -- b. Tests para realizar una reparacion en equipo 
-    it "Un equipo con un ferrari y un lamborghini de chasis 10 y 20 respectivamente y un presupuesto de 20000 repara los coches quedando con 1.5 de chasis el ferrari, 3 de chasis el lamborghini y un presupuesto de 7250" $ do  
-      repararChasis equipo1 `shouldBe` UnEquipo {nombre = "Equipo1", presupuesto = 7250, autos = [UnAuto { marca = Ferrari, modelo = F50, desgasteChasis = 1.5, desgasteRuedas = 0, velocidadMáxima = 65, tiempoCarrera = 0, apodos = []}, UnAuto { marca = Lamborghini, modelo = Diablo, desgasteChasis = 3, desgasteRuedas = 0, velocidadMáxima = 73, tiempoCarrera = 0, apodos = []}]}
-    it "Un equipo con un fiat de chasis 50 y un presupuesto de 10000 quiere reparar el coche pero no alcanza el presupuesto quedando en condiciones iniciales" $ do  
-      repararChasis equipo2 `shouldBe` equipo2
+  -- 1. Equipos de competicion
 
+  -- a. Tests de agregarAuto
+    it "Un equipo con 70000 de presupuesto debe poder agregar una ferrari a sus autos" $ do
+      agregarAuto holaMundoTeam ferrari  `shouldBe` holaMundoTeam {autos = [ferrari], presupuesto = 5000}
+    it "Un equipo con 50000 de presupuesto que ya tiene un peugeot debe poder agregar un fiat, quedando con un presupuesto de 44000" $ do
+      agregarAuto holaMundoTeam { autos = [peugeot], presupuesto = 50000 } fiat `shouldBe` holaMundoTeam { autos = [peugeot, fiat], presupuesto = 6000 }
+
+  -- b. Tests de reparacion 
+    it "Reparar un equipo con un Ferrari cuyo desgaste de chasis es 10, un Lamborghini cuyo desgaste de chasis 20 y un presupuesto de 20000 deberia resultar en un Ferrari con 1.5 de desgaste de chasis, un Lamborghini con 3 de desgaste de chasis y un presupuesto restante de 7250" $ do
+      realizarAccionEnEquipo Reparar holaMundoTeam {autos = [ferrari { desgasteChasis = 10 }, lamborghini { desgasteChasis = 20 } ], presupuesto = 20000 } `shouldBe` holaMundoTeam { autos = [ferrari { desgasteChasis = 1.5 }, lamborghini { desgasteChasis = 3, desgasteRuedas = 0 }], presupuesto = 7250 }
+
+    it "Reparar un equipo con un Fiat cuyo desgaste de chasis es 50 y un presupuesto de 10000 deberia resultar en un Fiat con el mismo desgaste y el mismo presupuesto" $ do
+      realizarAccionEnEquipo Reparar holaMundoTeam {autos = [fiat {desgasteChasis = 50} ], presupuesto = 10000} `shouldBe` holaMundoTeam {autos = [fiat {desgasteChasis = 50}],  presupuesto = 10000}
+  
+  -- c. Tests de optimizacion
+    it "Optimizar un equipo con un Ferrari, un Lamborghini y un presupuesto de 20000 debe resultar en un Ferrari con v.m. de 78, un Lamborghini con v.m. de 87.6 y un presupuesto de 6200" $ do
+      realizarAccionEnEquipo Optimizar holaMundoTeam {autos = [ferrari,lamborghini ], presupuesto = 20000} `shouldBe` holaMundoTeam {autos = [ferrari {velocidadMáxima = 78},lamborghini {velocidadMáxima = 87.6}],  presupuesto = 6200}
+
+    it "Optimizar un equipo con un Ferrari, un Lamborghini y un presupuesto de 10000 debe resultar en un Ferrari con v.m. de 78, un Lamborghini con v.m. de 87.6 y un presupuesto de 6200" $ do
+      realizarAccionEnEquipo Optimizar holaMundoTeam {autos = [ferrari,lamborghini ], presupuesto = 10000} `shouldBe` holaMundoTeam {autos = [ferrari {velocidadMáxima = 78},lamborghini],  presupuesto = 3500}
+
+  -- d. Tests de ferrarizacion
+    it "Ferrarizar un equipo con un Peugeot, un Lamborghini y un presupuesto de 20000 da como resultado un equipo solo de Ferraris model F50 con unico apodo 'Nunca taxi' y presupuesto restante de 13000" $ do
+      realizarAccionEnEquipo Ferrarizar holaMundoTeam {autos = [peugeot,lamborghini ], presupuesto = 20000} `shouldBe` holaMundoTeam {autos = [peugeot{marca = Ferrari, modelo = F50, apodos = ["Nunca taxi"]},lamborghini{marca = Ferrari, modelo = F50, apodos = ["Nunca taxi"]} ], presupuesto = 13000}
+
+    it "Ferrarizar un equipo con un Peugeot, un Lamborghini y un presupuesto de 4000 da como resultado un equipo con un Ferrari modelo F50 con unico apodo 'Nunca taxi', el mismo Lamborghini y presupuesto restante de 500" $ do
+      realizarAccionEnEquipo Ferrarizar holaMundoTeam {autos = [peugeot,lamborghini ], presupuesto = 4000} `shouldBe` holaMundoTeam {autos = [peugeot{marca = Ferrari, modelo = F50, apodos = ["Nunca taxi"]},lamborghini ], presupuesto = 500}
+
+    it "Ferrarizar un equipo con un Peugeot, un Lamborghini, una Ferrari y un presupuesto de 20000 da como resultado un equipo con dos Ferraris modelo F50 con unico apodo 'Nunca taxi', una Ferrari modelo F50 con los apodos 'La nave', 'El fierro', 'Ferrucho y presupuesto restante de 13000" $ do
+      realizarAccionEnEquipo Ferrarizar holaMundoTeam {autos = [peugeot,lamborghini, ferrari ], presupuesto = 20000} `shouldBe` holaMundoTeam {autos = [peugeot{marca = Ferrari, modelo = F50, apodos = ["Nunca taxi"]},lamborghini{marca = Ferrari, modelo = F50, apodos = ["Nunca taxi"]},ferrari{apodos =["La nave", "El fierro", "Ferrucho"]} ], presupuesto = 13000}
+
+  -- 2. Costo total de reparacion
+
+    it "El costo total de reparacion de un equipo con Ferrari cuyo desgaste de chasis es 10 y Lamborghini cuyo desgaste de chasis es 20 sera de 12750" $ do
+      calcularCostoReparacionTotal holaMundoTeam {autos = [ferrari{desgasteChasis = 10}, lamborghini{desgasteChasis = 20} ]} `shouldBe` 12750
+
+    it "El costo total de reparacion de un equipo con Fiat cuyo desgaste de chasis es 50 y Peugeot cuyo desgaste de chasis es 0 sera de 21250" $ do
+      calcularCostoReparacionTotal holaMundoTeam {autos = [fiat{desgasteChasis = 50}, peugeot{desgasteChasis = 0} ]} `shouldBe` 21250
+    
