@@ -91,7 +91,7 @@ correrTests = hspec $ do
     it "Bautizar 'El diablo' a un auto marca Lamborghini sin apodos, sólo tiene el apodo 'El diablo'" $ do
       bautizarAuto lamborghini { apodos = [] } "El diablo" `shouldBe` lamborghini { apodos = ["El diablo"] }
 
-  -- e. Tests desarmadero
+  -- e. Tests de desarmadero
     it "Llevar a un desarmadero a un auto marca Fiat para cambiar por marca 'Tesla' modelo 'X', la marca es 'Tesla', el modelo es 'X' y sólo tiene el apodo 'Nunca Taxi'" $ do
       desarmadero fiat Tesla X `shouldBe` fiat { marca = Tesla, modelo = X, apodos = ["Nunca taxi"] }
 
@@ -141,51 +141,61 @@ correrTests = hspec $ do
 
   -- SEGUNDA ENTREGA
 
-  -- 1. Equipos de competicion
+  -- 1. Equipos de competición
 
   -- a. Tests de agregarAuto
     it "Un equipo con 70000 de presupuesto debe poder agregar una ferrari a sus autos" $ do
-      agregarAuto holaMundoTeam ferrari  `shouldBe` holaMundoTeam {autos = [ferrari], presupuesto = 5000}
+      agregarAuto holaMundoTeam ferrari  `shouldBe` holaMundoTeam { autos = [ferrari], presupuesto = 5000}
     it "Un equipo con 50000 de presupuesto que ya tiene un peugeot debe poder agregar un fiat, quedando con un presupuesto de 44000" $ do
       agregarAuto holaMundoTeam { autos = [peugeot], presupuesto = 50000 } fiat `shouldBe` holaMundoTeam { autos = [peugeot, fiat], presupuesto = 6000 }
 
-  -- b. Tests de reparacion 
+  -- b. Tests de reparación 
     it "Reparar un equipo con un Ferrari cuyo desgaste de chasis es 10, un Lamborghini cuyo desgaste de chasis 20 y un presupuesto de 20000 deberia resultar en un Ferrari con 1.5 de desgaste de chasis, un Lamborghini con 3 de desgaste de chasis y un presupuesto restante de 7250" $ do
-      realizarAccionEnEquipo Reparar holaMundoTeam {autos = [ferrari { desgasteChasis = 10 }, lamborghini { desgasteChasis = 20 } ], presupuesto = 20000 } `shouldBe` holaMundoTeam { autos = [ferrari { desgasteChasis = 1.5 }, lamborghini { desgasteChasis = 3, desgasteRuedas = 0 }], presupuesto = 7250 }
+      realizarAccionEnEquipo Reparar holaMundoTeam { autos = [ferrari { desgasteChasis = 10 }, lamborghini { desgasteChasis = 20 } ], presupuesto = 20000 } `shouldBe` holaMundoTeam { autos = [ferrari { desgasteChasis = 1.5 }, lamborghini { desgasteChasis = 3, desgasteRuedas = 0 }], presupuesto = 7250 }
 
     it "Reparar un equipo con un Fiat cuyo desgaste de chasis es 50 y un presupuesto de 10000 deberia resultar en un Fiat con el mismo desgaste y el mismo presupuesto" $ do
-      realizarAccionEnEquipo Reparar holaMundoTeam {autos = [fiat {desgasteChasis = 50} ], presupuesto = 10000} `shouldBe` holaMundoTeam {autos = [fiat {desgasteChasis = 50}],  presupuesto = 10000}
+      realizarAccionEnEquipo Reparar holaMundoTeam { autos = [fiat { desgasteChasis = 50 } ], presupuesto = 10000 } `shouldBe` holaMundoTeam { autos = [fiat { desgasteChasis = 50 }],  presupuesto = 10000 }
   
-  -- c. Tests de optimizacion
+  -- c. Tests de optimización
     it "Optimizar un equipo con un Ferrari, un Lamborghini y un presupuesto de 20000 debe resultar en un Ferrari con v.m. de 78, un Lamborghini con v.m. de 87.6 y un presupuesto de 6200" $ do
-      realizarAccionEnEquipo Optimizar holaMundoTeam {autos = [ferrari,lamborghini ], presupuesto = 20000} `shouldBe` holaMundoTeam {autos = [ferrari {velocidadMáxima = 78},lamborghini {velocidadMáxima = 87.6}],  presupuesto = 6200}
+      realizarAccionEnEquipo Optimizar holaMundoTeam { autos = [ferrari,lamborghini ], presupuesto = 20000 } `shouldBe` holaMundoTeam { autos = [ferrari { velocidadMáxima = 78 }, lamborghini { velocidadMáxima = 87.6 }],  presupuesto = 6200}
 
     it "Optimizar un equipo con un Ferrari, un Lamborghini y un presupuesto de 10000 debe resultar en un Ferrari con v.m. de 78, un Lamborghini con v.m. de 87.6 y un presupuesto de 6200" $ do
-      realizarAccionEnEquipo Optimizar holaMundoTeam {autos = [ferrari,lamborghini ], presupuesto = 10000} `shouldBe` holaMundoTeam {autos = [ferrari {velocidadMáxima = 78},lamborghini],  presupuesto = 3500}
+      realizarAccionEnEquipo Optimizar holaMundoTeam { autos = [ferrari,lamborghini ], presupuesto = 10000 } `shouldBe` holaMundoTeam { autos = [ferrari { velocidadMáxima = 78 }, lamborghini], presupuesto = 3500 }
 
   -- d. Tests de ferrarizacion
-    it "Ferrarizar un equipo con un Peugeot, un Lamborghini y un presupuesto de 20000 da como resultado un equipo solo de Ferraris model F50 con unico apodo 'Nunca taxi' y presupuesto restante de 13000" $ do
-      realizarAccionEnEquipo Ferrarizar holaMundoTeam {autos = [peugeot,lamborghini ], presupuesto = 20000} `shouldBe` holaMundoTeam {autos = [peugeot{marca = Ferrari, modelo = F50, apodos = ["Nunca taxi"]},lamborghini{marca = Ferrari, modelo = F50, apodos = ["Nunca taxi"]} ], presupuesto = 13000}
+    it "Ferrarizar un equipo con un Peugeot, un Lamborghini y un presupuesto de 20000 da como resultado un equipo solo de Ferraris modelo F50 con unico apodo 'Nunca taxi' y presupuesto restante de 13000" $ do
+      realizarAccionEnEquipo Ferrarizar holaMundoTeam { autos = [peugeot,lamborghini ], presupuesto = 20000 } `shouldBe` holaMundoTeam { autos = [peugeot { marca = Ferrari, modelo = F50, apodos = ["Nunca taxi"] }, lamborghini { marca = Ferrari, modelo = F50, apodos = ["Nunca taxi"] } ], presupuesto = 13000}
 
     it "Ferrarizar un equipo con un Peugeot, un Lamborghini y un presupuesto de 4000 da como resultado un equipo con un Ferrari modelo F50 con unico apodo 'Nunca taxi', el mismo Lamborghini y presupuesto restante de 500" $ do
-      realizarAccionEnEquipo Ferrarizar holaMundoTeam {autos = [peugeot,lamborghini ], presupuesto = 4000} `shouldBe` holaMundoTeam {autos = [peugeot{marca = Ferrari, modelo = F50, apodos = ["Nunca taxi"]},lamborghini ], presupuesto = 500}
+      realizarAccionEnEquipo Ferrarizar holaMundoTeam { autos = [peugeot,lamborghini ], presupuesto = 4000 } `shouldBe` holaMundoTeam { autos = [peugeot { marca = Ferrari, modelo = F50, apodos = ["Nunca taxi"] }, lamborghini ], presupuesto = 500 }
 
     it "Ferrarizar un equipo con un Peugeot, un Lamborghini, una Ferrari y un presupuesto de 20000 da como resultado un equipo con dos Ferraris modelo F50 con unico apodo 'Nunca taxi', una Ferrari modelo F50 con los apodos 'La nave', 'El fierro', 'Ferrucho y presupuesto restante de 13000" $ do
-      realizarAccionEnEquipo Ferrarizar holaMundoTeam {autos = [peugeot,lamborghini, ferrari ], presupuesto = 20000} `shouldBe` holaMundoTeam {autos = [peugeot{marca = Ferrari, modelo = F50, apodos = ["Nunca taxi"]},lamborghini{marca = Ferrari, modelo = F50, apodos = ["Nunca taxi"]},ferrari{apodos =["La nave", "El fierro", "Ferrucho"]} ], presupuesto = 13000}
+      realizarAccionEnEquipo Ferrarizar holaMundoTeam { autos = [peugeot,lamborghini, ferrari ], presupuesto = 20000 } `shouldBe` holaMundoTeam { autos = [peugeot { marca = Ferrari, modelo = F50, apodos = ["Nunca taxi"]}, lamborghini { marca = Ferrari, modelo = F50, apodos = ["Nunca taxi"] }, ferrari { apodos = ["La nave", "El fierro", "Ferrucho"] } ], presupuesto = 13000 }
 
-  -- 2. Costo total de reparacion
+  -- 2. Costo total de reparación
 
     it "El costo total de reparación de un equipo con Ferrari cuyo desgaste de chasis es 10 y Lamborghini cuyo desgaste de chasis es 20 sera de 12750" $ do
-      calcularCostoReparacionTotal holaMundoTeam {autos = [ferrari{desgasteChasis = 10}, lamborghini{desgasteChasis = 20} ]} `shouldBe` 12750
+      calcularCostoReparacionTotal holaMundoTeam { autos = [ferrari { desgasteChasis = 10 }, lamborghini { desgasteChasis = 20 }]} `shouldBe` 12750
 
     it "El costo total de reparación de un equipo con Fiat cuyo desgaste de chasis es 50 y Peugeot cuyo desgaste de chasis es 0 sera de 21250" $ do
-      calcularCostoReparacionTotal holaMundoTeam {autos = [fiat{desgasteChasis = 50}, peugeot{desgasteChasis = 0} ]} `shouldBe` 21250
+      calcularCostoReparacionTotal holaMundoTeam { autos = [fiat { desgasteChasis = 50 }, peugeot { desgasteChasis = 0 }]} `shouldBe` 21250
 
- -- 6 Pegar la vuelta
-  {-   it "Pegar la vuelta a la manzana con una Ferrari y un Peugeot cuyo desgaste de ruedas es de 79, debe devolver a la Ferrari con un tiempo de carrera de 9,6 y al Peugeot con tiempo de carrera 11,7" $ do
+  -- 6 Pegar la vuelta
+  {- it "Pegar la vuelta a la manzana con una Ferrari y un Peugeot cuyo desgaste de ruedas es de 79, debe devolver a la Ferrari con un tiempo de carrera de 9,6 y al Peugeot con tiempo de carrera 11,7" $ do
       peganLaVuelta vueltaALaManzana [ferrari, peugeot{desgasteRuedas = 79}] `shouldBe` [ferrari { tiempoCarrera = 9.6, desgasteChasis = 5.2, desgasteRuedas = 1.7333333333333333}, peugeot { tiempoCarrera = 11.7,desgasteChasis = 3.9, desgasteRuedas = 80.3}]
- -}
--- 7.
-    -- Test para verificar si el ordenamiento de posiciones finales es correcta
-    it "Ordenar una lista compuesta por un Ferrari cuyo tiempo de carrera es 2, un Lamborghini cuyo tiempo de carrera es 1 y un Peugeot cuyo tiempo de carrera es 3 por su posicion final en la carrera debe resultar en Lamborghini, Ferrari y Peugeot " $ do
+  -}
+  -- 7. ¡¡Y llegaron las carreras!!
+
+  -- i. Test para verificar si el ordenamiento de posiciones finales es correcta
+    it "Las posiciones de un Ferrari cuyo tiempo de carrera es 2, un Lamborghini cuyo tiempo de carrera es 1 y un Peugeot cuyo tiempo de carrera es 3 por su posicion final en la carrera deben resultar en Lamborghini, Ferrari y Peugeot " $ do
       definirPosicionesFinVuelta [ferrari { tiempoCarrera = 2 }, lamborghini { tiempoCarrera = 1 }, peugeot { tiempoCarrera = 3 }] `shouldBe` [lamborghini { tiempoCarrera = 1 }, ferrari { tiempoCarrera = 2 }, peugeot { tiempoCarrera = 3 }]
+
+  -- i. Test de ganador
+    it "El auto ganador luego de todas las vueltas de la carrera debe ser el que tiene menor tiempo de carrera" $ do
+      ganador (correrCarrera [ferrari, lamborghini, peugeot] tourBuenosAires) `shouldBe` lamborghini
+  
+  
+  -- ii. Test para verificar el tiempo total del segundo
+  --  it "El tiempo total del segundo" $ do
+        --

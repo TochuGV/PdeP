@@ -360,11 +360,11 @@ superPista = UnaPista { nombrePista = "Super Pista", pais = "Argentina", precioB
     ruloClasico,
     zigZagLoco
   ]
-}
+} 
 
 -- c. Hacer la función peganLaVuelta/2
 peganLaVuelta :: Pista -> [Auto] -> [Auto]
-peganLaVuelta pista = map (\auto -> foldl pasarPorTramo auto (tramos pista)) 
+peganLaVuelta pista = map (\auto -> foldl pasarPorTramo auto (tramos pista))
 
 -- 7. ¡¡Y llegaron las carreras!!
 
@@ -376,7 +376,7 @@ data Carrera = UnaCarrera {
 
 -- b. Representar el tourBuenosAires
 tourBuenosAires :: Carrera
-tourBuenosAires = UnaCarrera { pista = superPista, vueltas = 3 } --Tienen que ser 20 vueltas
+tourBuenosAires = UnaCarrera { pista = superPista, vueltas = 1 } --Tienen que ser 20 vueltas
 
 -- c. Jugar carrera
 data Resultados = UnResultado {
@@ -394,26 +394,29 @@ correrCarrera autos carrera = procesarResultadosParciales (obtenerResultadosParc
 
 -- Funcion que obtiene los resultados parciales de toda la carrera
 obtenerResultadosParciales :: ResultadosParciales -> Number -> Carrera -> ResultadosParciales
+obtenerResultadosParciales [] _ _ = []
 obtenerResultadosParciales resultadosAnteriores numeroVuelta carrera
   | numeroVuelta > vueltas carrera = tail resultadosAnteriores
-  | otherwise = obtenerResultadosParciales (resultadosAnteriores ++ [peganLaVuelta (pista carrera) (last resultadosAnteriores)]) (numeroVuelta + 1) carrera
+  | otherwise = obtenerResultadosParciales (resultadosAnteriores ++ [peganLaVuelta (pista carrera) (autosQueNoPeganLaVuelta (last resultadosAnteriores))]) (numeroVuelta + 1) carrera
 
--- Funcion que elimina los autos que no siguen corriendo porque no dan mas (deja sin efecto a la validacion por guardas de peganLaVuelta)
-autosQueSiguenCorriendo :: [Auto] -> [Auto]
-autosQueSiguenCorriendo  = filter (not . noDaMas) 
+autosQueNoPeganLaVuelta :: [Auto] -> [Auto]
+autosQueNoPeganLaVuelta  = filter (not . noDaMas)
 
 -- Funcion que procesa los resultados parciales y devuelve un resultado final
 procesarResultadosParciales :: ResultadosParciales -> Resultados
 procesarResultadosParciales resultadosParciales = UnResultado {
   -- i.
-  ganador = tomarAutoPorPosicionFinal (obtenerVueltaEspecifica resultadosParciales (length resultadosParciales - 1)) 1,
+  ganador = tomarAutoPorPosicionFinal (tomarVueltaFinal resultadosParciales) 1,
   -- ii.
-  tiempoTotalSegundo = tiempoCarrera (tomarAutoPorPosicionFinal (obtenerVueltaEspecifica resultadosParciales (length resultadosParciales - 1)) 2),
+  tiempoTotalSegundo = tiempoCarrera (tomarAutoPorPosicionFinal (tomarVueltaFinal resultadosParciales) 2),
   -- iii.
-  tiempoParcialDosVueltasGanador = obtenerTiempoPorVuelta (obtenerVueltaEspecifica resultadosParciales 2 ) (tomarAutoPorPosicionFinal (last resultadosParciales) 1),
+  tiempoParcialDosVueltasGanador = obtenerTiempoPorVuelta (obtenerVueltaEspecifica resultadosParciales 2 ) (tomarAutoPorPosicionFinal (tomarVueltaFinal resultadosParciales) 1),
   -- iv.
-  cantidadDeAutosQueTerminaron =  length (last resultadosParciales) - autosQueNoTerminaron (obtenerVueltaEspecifica resultadosParciales (length resultadosParciales - 2))
+  cantidadDeAutosQueTerminaron =  length (tomarVueltaFinal resultadosParciales)
 }
+
+tomarVueltaFinal :: ResultadosParciales -> [Auto]
+tomarVueltaFinal resultadosParciales = obtenerVueltaEspecifica resultadosParciales (length resultadosParciales - 1)
 
 -- Funciones accesorias a el punto iii.
 obtenerTiempoPorVuelta :: [Auto] -> Auto -> Number
@@ -426,10 +429,6 @@ obtenerVueltaEspecifica resultadosParciales numeroVuelta = resultadosParciales !
 tomarAutoPorPosicionFinal :: [Auto] -> Number -> Auto
 tomarAutoPorPosicionFinal autos posicion = definirPosicionesFinVuelta autos !! (posicion - 1)
 
--- Funciones accesorias a el punto iv.
-autosQueNoTerminaron :: [Auto] -> Number
-autosQueNoTerminaron autos = length (filter noDaMas autos)
-
 -- Funciones auxiliares para definir posiciones finales de carrera con los autos que llegaron a la ultima vuelta 
 
 buscarAutoPorTiempo :: [Auto] -> Number -> Auto
@@ -441,4 +440,4 @@ ordenarTiemposDeCarrera autos = sort (map tiempoCarrera autos)
 
 -- Toma cada tiempo de carrera y lo relaciona con el auto que lo tiene
 definirPosicionesFinVuelta :: [Auto] -> [Auto]
-definirPosicionesFinVuelta autosDeVuelta = map (buscarAutoPorTiempo autosDeVuelta) (ordenarTiemposDeCarrera autosDeVuelta)
+definirPosicionesFinVuelta autosDeLaVuelta = map (buscarAutoPorTiempo autosDeLaVuelta) (ordenarTiemposDeCarrera autosDeLaVuelta)
