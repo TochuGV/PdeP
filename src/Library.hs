@@ -1,6 +1,6 @@
 module Library where
 import PdePreludat
-
+import Data.List (sort)
 ---------------------------------------- ENTREGA 1 ----------------------------------------
 
 -- 1. Modelar el auto 
@@ -284,7 +284,7 @@ generarFerrarisInfinitos multiplicadorVelocidad = generarFerrari multiplicadorVe
   -- iv. Se quiere conocer el costo total de reparación del equipo.
     -- Va a entrar en un bucle infinito, por lo que el costo total de reparación nunca finalizará de calcularse debido a que la lista de autos es infinita.
 
--- 4. Modificadores de tramos                       TRAMOS: 1. TRAMITO 2. CURVA TRANCA 3. CURVA PELIGROSA 4. ZIG ZAG LOCO 5. RULO CLASICO 6. DESEO DE MUERTE 7. TRAMO RECTO CLASSIC 8. CASI CURVA
+-- 4. Modificadores de tramos
 
 type Tramo = Auto -> Auto
 
@@ -307,25 +307,16 @@ tramoConObstruccion :: Number -> Tramo -> Auto -> Auto
 tramoConObstruccion metrosObstruidos tramo auto = tramo auto { desgasteRuedas = desgasteRuedas (tramo auto) + (metrosObstruidos * 2) }
 
 -- e. Tramo con turbo
-tramoTurboDurante :: Tramo -> Auto -> Auto
-tramoTurboDurante tramo auto = tramo auto {velocidadMáxima = velocidadMáxima auto * 2}
-
-tramoTurboDespues :: Tramo -> Auto -> Auto
-tramoTurboDespues tramo auto = tramo auto {velocidadMáxima = velocidadMáxima auto / 2}
-
---tramoConTurbo :: Tramo -> Auto -> Auto
---tramoConTurbo tramo auto = (tramo (auto { velocidadMáxima = velocidadMáxima auto * 2 })) { velocidadMáxima = velocidadMáxima auto }
+tramoConTurbo :: Tramo -> Auto -> Auto
+tramoConTurbo tramo auto = (tramo (auto { velocidadMáxima = velocidadMáxima auto * 2 })) { velocidadMáxima = velocidadMáxima auto }
 
 -- 5. Realizar la función que haga pasarPorTramo/2
-pasarPorTramo :: Tramo -> Auto -> Auto
-pasarPorTramo tramo auto
-  | noDaMas (tramo auto) = auto
-  | not (noDaMas (tramo auto)) = tramo auto
-
--- pasarPorTramo (curvaTranca con Ripio) auto
+pasarPorTramo ::  Auto -> Tramo -> Auto
+pasarPorTramo auto tramo
+  | noDaMas auto =  auto
+  | otherwise = tramo auto
 
 -- 6. Atravesando pistas
-
 data Pista = UnaPista {
   nombrePista :: String,
   pais :: String,
@@ -333,41 +324,121 @@ data Pista = UnaPista {
   tramos :: [Tramo]
 } deriving (Show, Ord, Eq)
 
+generarTramoRectoGenerico :: Number -> Tramo
+generarTramoRectoGenerico longitudTramo auto = auto { desgasteChasis = afectarChasis auto longitudTramo, tiempoCarrera = tiempoAgregadoPorTramoRecto auto longitudTramo }
+
+generarCurvaGenerica :: Number -> Number -> Tramo
+generarCurvaGenerica longitudCurva anguloCurva auto = auto { desgasteRuedas = calculoDesgasteTramo (desgasteRuedas auto) longitudCurva anguloCurva, tiempoCarrera = tiempoCarrera auto + sumaTiempo longitudCurva (velocidadMáxima auto) } 
+
+generarRuloGenerico :: Number -> Tramo
+generarRuloGenerico diametroRulo auto = auto { desgasteRuedas = calculoDesgasteRulo (desgasteRuedas auto) diametroRulo, tiempoCarrera = tiempoCarrera auto + sumaTiempoRulo diametroRulo (velocidadMáxima auto) }
+
+generarZigZagGenerico :: Number -> Tramo
+generarZigZagGenerico cambiosDireccion auto = auto { desgasteChasis = desgasteChasis auto + 5, desgasteRuedas = desgasteRuedasTramoZigZag auto cambiosDireccion, tiempoCarrera = tiempoCarrera auto + tiempoDeCambios cambiosDireccion }
+
 -- a. Crear la vueltaALaManzana
-
-longitudTramoRecto, longitudCurva, anguloCurva :: Number
-longitudTramoRecto = 130
-longitudCurva = 13
-anguloCurva = 90 --Revisar esto
-
-tramoRecto :: Tramo
-tramoRecto auto = auto { desgasteChasis = afectarChasis auto longitudTramoRecto , tiempoCarrera = tiempoAgregadoPorTramoRecto auto longitudTramoRecto }
-
-curva :: Tramo
-curva auto = auto { desgasteRuedas = calculoDesgasteTramo (desgasteRuedas auto) longitudCurva 90, tiempoCarrera = tiempoCarrera auto + sumaTiempo longitudCurva (velocidadMáxima auto) }
-
 vueltaALaManzana :: Pista
-vueltaALaManzana = UnaPista { nombrePista = "La manzana", pais = "Italia", precioBaseEntrada = 30, tramos = [tramoRecto, curva, tramoRecto, curva, tramoRecto, curva, tramoRecto, curva] }
+vueltaALaManzana = UnaPista { nombrePista = "La Manzana", precioBaseEntrada = 30, pais = "Italia", tramos = concat (replicate 4 [generarTramoRectoGenerico 130, generarCurvaGenerica 13 90]) }
 
--- b. Crear la superPista
+superPista :: Pista
+superPista = UnaPista { nombrePista = "Super Pista", pais = "Argentina", precioBaseEntrada = 300,
+  tramos = [
+    tramoRectoClassic,
+    curvaTranca,
+    tramoMojado tramito,
+    tramoConTurbo tramito,
+    generarRuloGenerico 10,
+    tramoConObstruccion 2 (generarCurvaGenerica 400 80),
+    generarCurvaGenerica 650 115,
+    generarTramoRectoGenerico 970,
+    curvaPeligrosa,
+    tramoConRipio tramito,
+    tramoConBoxes (generarTramoRectoGenerico 800),
+    tramoConObstruccion 5 casiCurva,
+    generarZigZagGenerico 2,
+    (tramoConRipio . tramoMojado) deseoDeMuerte,
+    ruloClasico,
+    zigZagLoco
+  ]
+}
 
 -- c. Hacer la función peganLaVuelta/2
+peganLaVuelta :: Pista -> [Auto] -> [Auto]
+peganLaVuelta pista = map (\auto -> foldl pasarPorTramo auto (tramos pista)) 
 
 -- 7. ¡¡Y llegaron las carreras!!
 
 -- a. Modelar una carrera
+data Carrera = UnaCarrera {
+  pista :: Pista,
+  vueltas :: Number
+} deriving (Show, Ord, Eq)
 
 -- b. Representar el tourBuenosAires
+tourBuenosAires :: Carrera
+tourBuenosAires = UnaCarrera { pista = superPista, vueltas = 3 } --Tienen que ser 20 vueltas
 
--- c.
+-- c. Jugar carrera
+data Resultados = UnResultado {
+  ganador :: Auto,
+  tiempoTotalSegundo :: Number,
+  tiempoParcialDosVueltasGanador :: Number,
+  cantidadDeAutosQueTerminaron :: Number
+} deriving (Show, Eq)
 
-  --i. El auto ganador luego de todas las vueltas de la carrera.
-    --
-  --ii. El tiempo total del segundo.
-    --
-  --iii. El tiempo parcial tras 2 vueltas del primer auto.
-    --
-  --iv. Cantidad de autos que terminaron la carrera.
-    --
+type ResultadosParciales = [[Auto]]
 
--- d.
+-- Funcion para disparar el inicio de la carrera
+correrCarrera :: [Auto] -> Carrera -> Resultados
+correrCarrera autos carrera = procesarResultadosParciales (obtenerResultadosParciales [autos] 1 carrera)
+
+-- Funcion que obtiene los resultados parciales de toda la carrera
+obtenerResultadosParciales :: ResultadosParciales -> Number -> Carrera -> ResultadosParciales
+obtenerResultadosParciales resultadosAnteriores numeroVuelta carrera
+  | numeroVuelta > vueltas carrera = tail resultadosAnteriores
+  | otherwise = obtenerResultadosParciales (resultadosAnteriores ++ [peganLaVuelta (pista carrera) (last resultadosAnteriores)]) (numeroVuelta + 1) carrera
+
+-- Funcion que elimina los autos que no siguen corriendo porque no dan mas (deja sin efecto a la validacion por guardas de peganLaVuelta)
+autosQueSiguenCorriendo :: [Auto] -> [Auto]
+autosQueSiguenCorriendo  = filter (not . noDaMas) 
+
+-- Funcion que procesa los resultados parciales y devuelve un resultado final
+procesarResultadosParciales :: ResultadosParciales -> Resultados
+procesarResultadosParciales resultadosParciales = UnResultado {
+  -- i.
+  ganador = tomarAutoPorPosicionFinal (obtenerVueltaEspecifica resultadosParciales (length resultadosParciales - 1)) 1,
+  -- ii.
+  tiempoTotalSegundo = tiempoCarrera (tomarAutoPorPosicionFinal (obtenerVueltaEspecifica resultadosParciales (length resultadosParciales - 1)) 2),
+  -- iii.
+  tiempoParcialDosVueltasGanador = obtenerTiempoPorVuelta (obtenerVueltaEspecifica resultadosParciales 2 ) (tomarAutoPorPosicionFinal (last resultadosParciales) 1),
+  -- iv.
+  cantidadDeAutosQueTerminaron =  length (last resultadosParciales) - autosQueNoTerminaron (obtenerVueltaEspecifica resultadosParciales (length resultadosParciales - 2))
+}
+
+-- Funciones accesorias a el punto iii.
+obtenerTiempoPorVuelta :: [Auto] -> Auto -> Number
+obtenerTiempoPorVuelta vuelta auto = tiempoCarrera (( head.filter (==auto)) vuelta)
+
+obtenerVueltaEspecifica :: ResultadosParciales -> Number -> [Auto]
+obtenerVueltaEspecifica resultadosParciales numeroVuelta = resultadosParciales !! (numeroVuelta - 1)
+
+-- Funcion para tomar el auto que corresponde a una posicion final (ganador, segundo, tercero, etc)
+tomarAutoPorPosicionFinal :: [Auto] -> Number -> Auto
+tomarAutoPorPosicionFinal autos posicion = definirPosicionesFinVuelta autos !! (posicion - 1)
+
+-- Funciones accesorias a el punto iv.
+autosQueNoTerminaron :: [Auto] -> Number
+autosQueNoTerminaron autos = length (filter noDaMas autos)
+
+-- Funciones auxiliares para definir posiciones finales de carrera con los autos que llegaron a la ultima vuelta 
+
+buscarAutoPorTiempo :: [Auto] -> Number -> Auto
+buscarAutoPorTiempo autos tiempoBuscado = head (filter ((==tiempoBuscado).tiempoCarrera) autos)
+
+-- Toma los tiempos de carrera de cada auto y los ordena de menor a mayor
+ordenarTiemposDeCarrera :: [Auto] -> [Number]
+ordenarTiemposDeCarrera autos = sort (map tiempoCarrera autos)
+
+-- Toma cada tiempo de carrera y lo relaciona con el auto que lo tiene
+definirPosicionesFinVuelta :: [Auto] -> [Auto]
+definirPosicionesFinVuelta autosDeVuelta = map (buscarAutoPorTiempo autosDeVuelta) (ordenarTiemposDeCarrera autosDeVuelta)

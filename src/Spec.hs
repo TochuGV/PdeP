@@ -175,9 +175,17 @@ correrTests = hspec $ do
 
   -- 2. Costo total de reparacion
 
-    it "El costo total de reparacion de un equipo con Ferrari cuyo desgaste de chasis es 10 y Lamborghini cuyo desgaste de chasis es 20 sera de 12750" $ do
+    it "El costo total de reparación de un equipo con Ferrari cuyo desgaste de chasis es 10 y Lamborghini cuyo desgaste de chasis es 20 sera de 12750" $ do
       calcularCostoReparacionTotal holaMundoTeam {autos = [ferrari{desgasteChasis = 10}, lamborghini{desgasteChasis = 20} ]} `shouldBe` 12750
 
-    it "El costo total de reparacion de un equipo con Fiat cuyo desgaste de chasis es 50 y Peugeot cuyo desgaste de chasis es 0 sera de 21250" $ do
+    it "El costo total de reparación de un equipo con Fiat cuyo desgaste de chasis es 50 y Peugeot cuyo desgaste de chasis es 0 sera de 21250" $ do
       calcularCostoReparacionTotal holaMundoTeam {autos = [fiat{desgasteChasis = 50}, peugeot{desgasteChasis = 0} ]} `shouldBe` 21250
-    
+
+ -- 6 Pegar la vuelta
+  {-   it "Pegar la vuelta a la manzana con una Ferrari y un Peugeot cuyo desgaste de ruedas es de 79, debe devolver a la Ferrari con un tiempo de carrera de 9,6 y al Peugeot con tiempo de carrera 11,7" $ do
+      peganLaVuelta vueltaALaManzana [ferrari, peugeot{desgasteRuedas = 79}] `shouldBe` [ferrari { tiempoCarrera = 9.6, desgasteChasis = 5.2, desgasteRuedas = 1.7333333333333333}, peugeot { tiempoCarrera = 11.7,desgasteChasis = 3.9, desgasteRuedas = 80.3}]
+ -}
+-- 7.
+    -- Test para verificar si el ordenamiento de posiciones finales es correcta
+    it "Ordenar una lista compuesta por un Ferrari cuyo tiempo de carrera es 2, un Lamborghini cuyo tiempo de carrera es 1 y un Peugeot cuyo tiempo de carrera es 3 por su posicion final en la carrera debe resultar en Lamborghini, Ferrari y Peugeot " $ do
+      definirPosicionesFinVuelta [ferrari { tiempoCarrera = 2 }, lamborghini { tiempoCarrera = 1 }, peugeot { tiempoCarrera = 3 }] `shouldBe` [lamborghini { tiempoCarrera = 1 }, ferrari { tiempoCarrera = 2 }, peugeot { tiempoCarrera = 3 }]
