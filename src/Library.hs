@@ -219,13 +219,10 @@ tienePresupuestoParaAccion accion auto presupuestoEquipo = ((<presupuestoEquipo)
 calcularCostoAccion :: Accion -> Auto -> Number
 calcularCostoAccion Inscribir auto = velocidadMáxima auto * 1000
 calcularCostoAccion Optimizar auto = velocidadMáxima auto * 100
-calcularCostoAccion Reparar auto = ((*500) . puntosChasisReparar) (desgasteChasis auto)
+calcularCostoAccion Reparar auto = ((*500) . (*0.85)) (desgasteChasis auto)
 calcularCostoAccion Ferrarizar auto 
   | marca auto == Ferrari = 0
   | otherwise = 3500
-
-puntosChasisReparar :: Number -> Number
-puntosChasisReparar desgasteChasis = desgasteChasis * 0.85
 
 -- b. c. d. -> Reparar, optimizar y ferrarizar en equipo
 realizarAccionEnEquipo :: Accion -> Equipo -> Equipo
@@ -394,7 +391,6 @@ correrCarrera autos carrera = procesarResultadosParciales (obtenerResultadosParc
 
 -- Funcion que obtiene los resultados parciales de toda la carrera
 obtenerResultadosParciales :: ResultadosParciales -> Number -> Carrera -> ResultadosParciales
-obtenerResultadosParciales [] _ _ = []
 obtenerResultadosParciales resultadosAnteriores numeroVuelta carrera
   | numeroVuelta > vueltas carrera = tail resultadosAnteriores
   | otherwise = obtenerResultadosParciales (resultadosAnteriores ++ [peganLaVuelta (pista carrera) (autosQueNoPeganLaVuelta (last resultadosAnteriores))]) (numeroVuelta + 1) carrera
@@ -404,6 +400,7 @@ autosQueNoPeganLaVuelta  = filter (not . noDaMas)
 
 -- Funcion que procesa los resultados parciales y devuelve un resultado final
 procesarResultadosParciales :: ResultadosParciales -> Resultados
+
 procesarResultadosParciales resultadosParciales = UnResultado {
   -- i.
   ganador = tomarAutoPorPosicionFinal (tomarVueltaFinal resultadosParciales) 1,
