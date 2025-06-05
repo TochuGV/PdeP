@@ -139,7 +139,7 @@ correrTests = hspec $ do
     it "Un grupo de autos con un auto Ferrari cuyo tiempo de carrera es de 200 y otro Lamborghini con tiempo también de 200 es para entendidos" $ do
       paraEntendidos [ferrari { tiempoCarrera = 200 }, lamborghini {tiempoCarrera = 200 }] `shouldBe` True
       
--------------------------------------------------------- SEGUNDA ENTREGA --------------------------------------------------------------------------------------------
+-------------------------------------------------------- ENTREGA 2 --------------------------------------------------------------------------------------------
 
   -- 1. Equipos de competición
 
@@ -189,28 +189,30 @@ correrTests = hspec $ do
 
   -- i. Test de ganador
     it "Si un Ferrari, un Lamborghini y un Peugeot corren el tourVueltaManzana, el ganador debe ser el Lamborghini por tener la mayor velocidad maxima" $ do
-      marca (ganador (correrCarrera [ferrari, lamborghini, peugeot] tourVueltaManzana)) `shouldBe` Ferrari
+      marca (ganador (correrCarrera [ferrari, lamborghini, peugeot] tourVueltaManzana)) `shouldBe` Lamborghini
   
+    it "Si un Ferrari, un Lamborghini y un Peugeot con velocidad maxima 1000 corren el tourVueltaManzana, el ganador debe ser el Peugeot por tener la mayor velocidad maxima" $ do
+        marca (ganador (correrCarrera [ferrari, lamborghini, peugeot {velocidadMáxima = 1000}] tourVueltaManzana)) `shouldBe` Peugeot
   -- ii. Test para verificar el tiempo total del segundo
-    it "El tiempo total del segundo de la carrera tourVueltaManzana es 46.8" $ do
-      tiempoTotalSegundo (correrCarrera [ferrari, lamborghini, peugeot] tourVueltaManzana) `shouldBe` 46.8
+    it "Si un Ferrari, un Lamborghini y un Peugeot corren el tourVueltaManzana, el tiempo total del segundo de la carrera (Ferrari por ser el segundo con mayor velocidad) es 28.8" $ do
+      tiempoTotalSegundo (correrCarrera [ferrari, lamborghini, peugeot] tourVueltaManzana) `shouldBe` 28.8
 
-    it "El tiempo total del segundo de la carrera tourVueltaManzana es 62.4 si la velocidad máxima de un Ferrari es de 30 y la velocidad máxima de un Lamborghini es de 200 " $ do
-      tiempoTotalSegundo (correrCarrera [ferrari { velocidadMáxima = 30 }, lamborghini { velocidadMáxima = 200 }, peugeot] tourVueltaManzana) `shouldBe` 62.4
+    it "Si un Ferrari con velocidad maxima 30, un Lamborghini con velocidad maxima 200 y un Peugeot corren el tourVueltaManzana, el tiempo total del segundo de la carrera (Peugeot) es de 46.8 " $ do
+      tiempoTotalSegundo (correrCarrera [ferrari { velocidadMáxima = 30 }, lamborghini { velocidadMáxima = 200 }, peugeot] tourVueltaManzana) `shouldBe` 46.8
   
   -- iii. Test para verificar el tiempo parcial tras 2 vueltas del primer auto
-    it "El tiempo parcial tras 2 vueltas del primer auto es 28.8" $ do
-      tiempoParcialDosVueltasGanador (correrCarrera [ferrari, lamborghini, peugeot] tourVueltaManzana) `shouldBe` 28.8
-
-    it "El tiempo parcial tras 2 vueltas del primer auto es 46.8 si Ferrari tiene un desgaste de chasis de 100" $ do
-      tiempoParcialDosVueltasGanador (correrCarrera [ferrari {desgasteChasis = 100}, lamborghini, peugeot] tourVueltaManzana) `shouldBe` 46.8
+    it "Si un Ferrari, un Lamborghini con desgaste 110 de chasis y un Peugeot corren el tourVueltaManzana, el tiempo parcial tras 2 vueltas del primer auto (Ferrari por ser el segundo mas rapido) es 19.2" $ do
+      tiempoParcialDosVueltasGanador (correrCarrera [ferrari , lamborghini {desgasteChasis = 110}, peugeot] tourVueltaManzana) `shouldBe` 19.2
   
+    it "Si un Ferrari con desgaste chasis 100, un Lamborghini con desgaste 110 de chasis y un Peugeot corren el tourVueltaManzana, el tiempo parcial tras 2 vueltas del primer auto (Peugeot por ser el unico que termina) es 31.2" $ do
+      tiempoParcialDosVueltasGanador (correrCarrera [ferrari {desgasteChasis = 100}, lamborghini {desgasteChasis = 110}, peugeot] tourVueltaManzana) `shouldBe` 31.2
+
   -- iv. Test para verificar la cantidad de autos que terminaron la carrera
-    it "La cantidad de autos que terminaron la carrera es 3" $ do
+    it "Si un Ferrari, un Lamborghini y un Peugeot corren el tourVueltaManzana, la cantidad de autos que terminaran es 3" $ do
       cantidadDeAutosQueTerminaron (correrCarrera [ferrari, lamborghini, peugeot] tourVueltaManzana) `shouldBe` 3
 
-    it "La cantidad de autos que terminaron la carrera son 2 si Ferrari tiene un desgaste de ruedas de 100" $ do
-      cantidadDeAutosQueTerminaron (correrCarrera [ferrari { desgasteRuedas = 100}, lamborghini, peugeot] tourVueltaManzana) `shouldBe` 2
+    it "Si un Ferrari con 110 de desgaste de ruedas, un Lamborghini y un Peugeot corren el tourVueltaManzana, la cantidad de autos que terminaran es 2" $ do
+      cantidadDeAutosQueTerminaron (correrCarrera [ferrari { desgasteRuedas = 110}, lamborghini, peugeot] tourVueltaManzana) `shouldBe` 2
 
   -- v (EXTRA). Test para verificar si el ordenamiento de posiciones finales es correcta
     it "Las posiciones de un Ferrari cuyo tiempo de carrera es 2, un Lamborghini cuyo tiempo de carrera es 1 y un Peugeot cuyo tiempo de carrera es 3 por su posicion final en la carrera deben resultar en Lamborghini, Ferrari y Peugeot " $ do

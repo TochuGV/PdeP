@@ -42,6 +42,7 @@ buenEstado auto
   | tiempoCarrera auto < 100 = desgasteChasis auto < 20
   | otherwise = desgasteRuedas auto < 60 && desgasteChasis auto < 40
 
+
 -- b. Saber si un auto no da más
 noDaMas :: Auto -> Bool
 noDaMas auto = take 2 (head (apodos auto)) == "La" && desgasteChasis auto > 80 || desgasteRuedas auto > 80
@@ -277,7 +278,7 @@ generarFerrarisInfinitos multiplicadorVelocidad = generarFerrari multiplicadorVe
     -- Se ferrarizan tantos autos como el presupuesto lo permita, es decir, hasta que el presupuesto sea menor al costo de la ferrarización.
   
   -- iv. Se quiere conocer el costo total de reparación del equipo.
-    -- Va a entrar en un bucle infinito, por lo que el costo total de reparación nunca finalizará de calcularse debido a que la lista de autos es infinita.
+    -- Va a entrar en un bucle y el costo total de reparación nunca finalizará de calcularse debido a que la lista de autos es infinita.
 
 -- 4. Modificadores de tramos
 
@@ -389,7 +390,6 @@ type ResultadosParciales = [[Auto]]
 correrCarrera :: [Auto] -> Carrera -> Resultados
 correrCarrera autos carrera = procesarResultadosParciales (obtenerResultadosParciales [autos] 1 carrera)
 
--- Funcion que obtiene los resultados parciales de toda la carrera
 obtenerResultadosParciales :: ResultadosParciales -> Number -> Carrera -> ResultadosParciales
 obtenerResultadosParciales resultadosAnteriores numeroVuelta carrera
   | numeroVuelta > vueltas carrera = tail resultadosAnteriores
@@ -398,7 +398,8 @@ obtenerResultadosParciales resultadosAnteriores numeroVuelta carrera
 autosQueNoPeganLaVuelta :: [Auto] -> [Auto]
 autosQueNoPeganLaVuelta  = filter (not . noDaMas)
 
--- Funcion que procesa los resultados parciales y devuelve un resultado final
+-- Funcion para devolver resultado final
+
 procesarResultadosParciales :: ResultadosParciales -> Resultados
 
 procesarResultadosParciales resultadosParciales = UnResultado {
@@ -413,31 +414,29 @@ procesarResultadosParciales resultadosParciales = UnResultado {
 }
 
 tomarVueltaFinal :: ResultadosParciales -> [Auto]
-tomarVueltaFinal resultadosParciales = obtenerVueltaEspecifica resultadosParciales (length resultadosParciales - 1)
+tomarVueltaFinal resultadosParciales = obtenerVueltaEspecifica resultadosParciales (length resultadosParciales)
 
--- Funciones accesorias a el punto iii.
-obtenerTiempoPorVuelta :: [Auto] -> Auto -> Number
-obtenerTiempoPorVuelta vuelta auto = tiempoCarrera ((head.filter (==auto)) vuelta)
+tomarAutoPorPosicionFinal :: [Auto] -> Number -> Auto
+tomarAutoPorPosicionFinal autos posicion = definirPosicionesFinVuelta autos !! (posicion - 1)
 
 obtenerVueltaEspecifica :: ResultadosParciales -> Number -> [Auto]
-obtenerVueltaEspecifica resultadosParciales numeroVuelta = resultadosParciales !! numeroVuelta
+obtenerVueltaEspecifica resultadosParciales numeroVuelta = resultadosParciales !! (numeroVuelta - 1)
 
--- Funcion para tomar el auto que corresponde a una posicion final (ganador, segundo, tercero, etc)
-tomarAutoPorPosicionFinal :: [Auto] -> Number -> Auto
-tomarAutoPorPosicionFinal autos posicion = definirPosicionesFinVuelta autos !! posicion
+obtenerTiempoPorVuelta :: [Auto] -> Auto -> Number
+obtenerTiempoPorVuelta autosVueltaSeleccionada autoBuscado = tiempoCarrera (head (filter ((== marca autoBuscado) . marca) autosVueltaSeleccionada))
 
--- Funciones auxiliares para definir posiciones finales de carrera con los autos que llegaron a la ultima vuelta 
+-- Funciones auxiliares para definir posiciones de carrera segun una vuelta
+
 buscarAutoPorTiempo :: [Auto] -> Number -> Auto
 buscarAutoPorTiempo autos tiempoBuscado = head (filter ((==tiempoBuscado).tiempoCarrera) autos)
 
--- Toma los tiempos de carrera de cada auto y los ordena de menor a mayor
 ordenarTiemposDeCarrera :: [Auto] -> [Number]
 ordenarTiemposDeCarrera autos = sort (map tiempoCarrera autos)
 
--- Toma cada tiempo de carrera y lo relaciona con el auto que lo tiene
 definirPosicionesFinVuelta :: [Auto] -> [Auto]
 definirPosicionesFinVuelta autosDeLaVuelta = map (buscarAutoPorTiempo autosDeLaVuelta) (ordenarTiemposDeCarrera autosDeLaVuelta)
 
 -- Funciones auxiliares para las pruebas
+
 tourVueltaManzana :: Carrera
 tourVueltaManzana = UnaCarrera { pista = vueltaALaManzana, vueltas = 3 }
