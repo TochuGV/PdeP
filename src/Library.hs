@@ -41,8 +41,6 @@ buenEstado UnAuto {marca = Peugeot} = False
 buenEstado auto
   | tiempoCarrera auto < 100 = desgasteChasis auto < 20
   | otherwise = desgasteRuedas auto < 60 && desgasteChasis auto < 40
-  -- | desgasteRuedas auto < 60 = desgasteChasis auto < 40
-  -- | otherwise = False
 
 -- b. Saber si un auto no da más
 noDaMas :: Auto -> Bool
@@ -217,8 +215,8 @@ tienePresupuestoParaAccion :: Accion -> Auto -> Number -> Bool
 tienePresupuestoParaAccion accion auto presupuestoEquipo = ((<presupuestoEquipo) . calcularCostoAccion accion) auto
 
 calcularCostoAccion :: Accion -> Auto -> Number
-calcularCostoAccion Inscribir auto = velocidadMáxima auto * 1000
-calcularCostoAccion Optimizar auto = velocidadMáxima auto * 100
+calcularCostoAccion Inscribir auto = (*1000) (velocidadMáxima auto)
+calcularCostoAccion Optimizar auto = (*100) (velocidadMáxima auto)
 calcularCostoAccion Reparar auto = ((*500) . (*0.85)) (desgasteChasis auto)
 calcularCostoAccion Ferrarizar auto 
   | marca auto == Ferrari = 0
@@ -293,19 +291,19 @@ tramoConBoxes tramo auto
 
 -- b. Tramo mojado
 tramoMojado :: Tramo -> Auto -> Auto 
-tramoMojado tramo auto = tramo auto { tiempoCarrera = tiempoCarrera (tramo auto) * 1.5 }
+tramoMojado tramo auto = tramo auto { tiempoCarrera = (*1.5) (tiempoCarrera (tramo auto)) }
 
 -- c. Tramo con ripio
 tramoConRipio :: Tramo -> Auto -> Auto
-tramoConRipio tramo auto = tramo auto { desgasteChasis = desgasteChasis (tramo auto) * 2, desgasteRuedas = desgasteRuedas (tramo auto) * 2, tiempoCarrera = tiempoCarrera (tramo auto) * 2 }
+tramoConRipio tramo auto = tramo auto { desgasteChasis = (*2) (desgasteChasis (tramo auto)), desgasteRuedas = (*2) (desgasteRuedas (tramo auto)), tiempoCarrera = (*2) (tiempoCarrera (tramo auto))}
 
 -- d. Tramo con alguna obstrucción
 tramoConObstruccion :: Number -> Tramo -> Auto -> Auto
-tramoConObstruccion metrosObstruidos tramo auto = tramo auto { desgasteRuedas = desgasteRuedas (tramo auto) + (metrosObstruidos * 2) }
+tramoConObstruccion metrosObstruidos tramo auto = tramo auto { desgasteRuedas = desgasteRuedas (tramo auto) + (*2) metrosObstruidos }
 
 -- e. Tramo con turbo
 tramoConTurbo :: Tramo -> Auto -> Auto
-tramoConTurbo tramo auto = (tramo (auto { velocidadMáxima = velocidadMáxima auto * 2 })) { velocidadMáxima = velocidadMáxima auto }
+tramoConTurbo tramo auto = (tramo (auto { velocidadMáxima = (*2) (velocidadMáxima auto) })) { velocidadMáxima = velocidadMáxima auto }
 
 -- 5. Realizar la función que haga pasarPorTramo/2
 pasarPorTramo ::  Auto -> Tramo -> Auto
@@ -331,7 +329,7 @@ generarRuloGenerico :: Number -> Tramo
 generarRuloGenerico diametroRulo auto = auto { desgasteRuedas = calculoDesgasteRulo (desgasteRuedas auto) diametroRulo, tiempoCarrera = tiempoCarrera auto + sumaTiempoRulo diametroRulo (velocidadMáxima auto) }
 
 generarZigZagGenerico :: Number -> Tramo
-generarZigZagGenerico cambiosDireccion auto = auto { desgasteChasis = desgasteChasis auto + 5, desgasteRuedas = desgasteRuedasTramoZigZag auto cambiosDireccion, tiempoCarrera = tiempoCarrera auto + tiempoDeCambios cambiosDireccion }
+generarZigZagGenerico cambiosDireccion auto = auto { desgasteChasis = (+5) (desgasteChasis auto), desgasteRuedas = desgasteRuedasTramoZigZag auto cambiosDireccion, tiempoCarrera = tiempoCarrera auto + tiempoDeCambios cambiosDireccion }
 
 -- a. Crear la vueltaALaManzana
 vueltaALaManzana :: Pista
@@ -361,7 +359,8 @@ superPista = UnaPista { nombrePista = "Super Pista", pais = "Argentina", precioB
 
 -- c. Hacer la función peganLaVuelta/2
 peganLaVuelta :: Pista -> [Auto] -> [Auto]
-peganLaVuelta pista = map (\auto -> foldl pasarPorTramo auto (tramos pista))
+peganLaVuelta _ [] = []
+peganLaVuelta pista autos = map (\auto -> foldl pasarPorTramo auto (tramos pista)) autos
 
 -- 7. ¡¡Y llegaron las carreras!!
 
@@ -373,7 +372,7 @@ data Carrera = UnaCarrera {
 
 -- b. Representar el tourBuenosAires
 tourBuenosAires :: Carrera
-tourBuenosAires = UnaCarrera { pista = superPista, vueltas = 1 } --Tienen que ser 20 vueltas
+tourBuenosAires = UnaCarrera { pista = superPista, vueltas = 20 }
 
 -- c. Jugar carrera
 data Resultados = UnResultado {
@@ -409,7 +408,7 @@ procesarResultadosParciales resultadosParciales = UnResultado {
   -- iii.
   tiempoParcialDosVueltasGanador = obtenerTiempoPorVuelta (obtenerVueltaEspecifica resultadosParciales 2 ) (tomarAutoPorPosicionFinal (tomarVueltaFinal resultadosParciales) 1),
   -- iv.
-  cantidadDeAutosQueTerminaron =  length (tomarVueltaFinal resultadosParciales)
+  cantidadDeAutosQueTerminaron = length (tomarVueltaFinal resultadosParciales)
 }
 
 tomarVueltaFinal :: ResultadosParciales -> [Auto]
@@ -417,14 +416,14 @@ tomarVueltaFinal resultadosParciales = obtenerVueltaEspecifica resultadosParcial
 
 -- Funciones accesorias a el punto iii.
 obtenerTiempoPorVuelta :: [Auto] -> Auto -> Number
-obtenerTiempoPorVuelta vuelta auto = tiempoCarrera (( head.filter (==auto)) vuelta)
+obtenerTiempoPorVuelta vuelta auto = tiempoCarrera ((head.filter (==auto)) vuelta)
 
 obtenerVueltaEspecifica :: ResultadosParciales -> Number -> [Auto]
-obtenerVueltaEspecifica resultadosParciales numeroVuelta = resultadosParciales !! (numeroVuelta - 1)
+obtenerVueltaEspecifica resultadosParciales numeroVuelta = resultadosParciales !! numeroVuelta
 
 -- Funcion para tomar el auto que corresponde a una posicion final (ganador, segundo, tercero, etc)
 tomarAutoPorPosicionFinal :: [Auto] -> Number -> Auto
-tomarAutoPorPosicionFinal autos posicion = definirPosicionesFinVuelta autos !! (posicion - 1)
+tomarAutoPorPosicionFinal autos posicion = definirPosicionesFinVuelta autos !! posicion
 
 -- Funciones auxiliares para definir posiciones finales de carrera con los autos que llegaron a la ultima vuelta 
 
@@ -438,3 +437,10 @@ ordenarTiemposDeCarrera autos = sort (map tiempoCarrera autos)
 -- Toma cada tiempo de carrera y lo relaciona con el auto que lo tiene
 definirPosicionesFinVuelta :: [Auto] -> [Auto]
 definirPosicionesFinVuelta autosDeLaVuelta = map (buscarAutoPorTiempo autosDeLaVuelta) (ordenarTiemposDeCarrera autosDeLaVuelta)
+
+-- Funciones auxiliares para las pruebas
+tourVueltaManzana :: Carrera
+tourVueltaManzana = UnaCarrera { pista = vueltaALaManzana, vueltas = 3 }
+
+--cantidadAutosTerminaronCarrera :: Carrera -> [Auto] -> Number
+--cantidadAutosTerminaronCarrera carrera = cantidadDeAutosQueTerminaron
