@@ -335,6 +335,7 @@ generarZigZagGenerico cambiosDireccion auto = auto { desgasteChasis = (+5) (desg
 vueltaALaManzana :: Pista
 vueltaALaManzana = UnaPista { nombrePista = "La Manzana", precioBaseEntrada = 30, pais = "Italia", tramos = concat (replicate 4 [generarTramoRectoGenerico 130, generarCurvaGenerica 13 90]) }
 
+--b. Crear la superPista
 superPista :: Pista
 superPista = UnaPista { nombrePista = "Super Pista", pais = "Argentina", precioBaseEntrada = 300,
   tramos = [
@@ -426,7 +427,6 @@ tomarAutoPorPosicionFinal :: [Auto] -> Number -> Auto
 tomarAutoPorPosicionFinal autos posicion = definirPosicionesFinVuelta autos !! posicion
 
 -- Funciones auxiliares para definir posiciones finales de carrera con los autos que llegaron a la ultima vuelta 
-
 buscarAutoPorTiempo :: [Auto] -> Number -> Auto
 buscarAutoPorTiempo autos tiempoBuscado = head (filter ((==tiempoBuscado).tiempoCarrera) autos)
 
@@ -441,6 +441,3 @@ definirPosicionesFinVuelta autosDeLaVuelta = map (buscarAutoPorTiempo autosDeLaV
 -- Funciones auxiliares para las pruebas
 tourVueltaManzana :: Carrera
 tourVueltaManzana = UnaCarrera { pista = vueltaALaManzana, vueltas = 3 }
-
---cantidadAutosTerminaronCarrera :: Carrera -> [Auto] -> Number
---cantidadAutosTerminaronCarrera carrera = cantidadDeAutosQueTerminaron
