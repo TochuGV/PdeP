@@ -181,7 +181,8 @@ correrTests = hspec $ do
     it "El costo total de reparación de un equipo con Fiat cuyo desgaste de chasis es 50 y Peugeot cuyo desgaste de chasis es 0 sera de 21250" $ do
       calcularCostoReparacionTotal holaMundoTeam { autos = [fiat { desgasteChasis = 50 }, peugeot { desgasteChasis = 0 }]} `shouldBe` 21250
 
-  -- 6 Pegar la vuelta
+  -- 6. Pegar la vuelta
+  
     it "Pegar la vuelta a la manzana con una Ferrari y un Peugeot cuyo desgaste de ruedas es de 79, debe devolver a la Ferrari con un tiempo de carrera de 9,6 y al Peugeot con tiempo de carrera 11,7" $ do
       map tiempoCarrera (peganLaVuelta vueltaALaManzana [ferrari, peugeot{desgasteRuedas = 79}]) `shouldBe` [9.6, 11.7]
       

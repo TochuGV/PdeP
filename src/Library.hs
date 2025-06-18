@@ -254,7 +254,6 @@ realizarAccionAutos costoAccion accion presupuesto (x:xs)
   | costoAccion x < presupuesto =  accion x : realizarAccionAutos costoAccion accion (presupuesto - costoAccion x) xs
   | otherwise = x:xs
 
-
 -- 2. Calcular costo accion total
 
 calcularCostoReparacionTotal :: Equipo -> Number
@@ -316,12 +315,14 @@ tramoConTurbo :: Tramo -> Auto -> Auto
 tramoConTurbo tramo auto = (tramo (auto { velocidadMáxima = (*2) (velocidadMáxima auto) })) { velocidadMáxima = velocidadMáxima auto }
 
 -- 5. Realizar la función que haga pasarPorTramo/2
+
 pasarPorTramo ::  Auto -> Tramo -> Auto
 pasarPorTramo auto tramo
   | noDaMas auto =  auto
   | otherwise = tramo auto
 
 -- 6. Atravesando pistas
+
 data Pista = UnaPista {
   nombrePista :: String,
   pais :: String,
@@ -444,7 +445,7 @@ definirPosicionesFinVuelta autos
 ordenarPorTiemposDeCarrera :: [Auto] -> [Auto]
 ordenarPorTiemposDeCarrera [] = []
 ordenarPorTiemposDeCarrera [x] = [x]
-ordenarPorTiemposDeCarrera (x:y:xs) 
+ordenarPorTiemposDeCarrera (x:y:xs)
   | tiempoCarrera x < tiempoCarrera y = x : ordenarPorTiemposDeCarrera (y:xs)
   | otherwise = y : ordenarPorTiemposDeCarrera (x:xs)  
 
