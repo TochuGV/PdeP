@@ -1,6 +1,6 @@
 module Library where
 import PdePreludat
-import Data.List (sort)
+
 ---------------------------------------- ENTREGA 1 ----------------------------------------
 
 -- 1. Modelar el auto 
@@ -201,58 +201,67 @@ data Equipo = UnEquipo {
   presupuesto :: Number
 } deriving (Show, Eq) 
 
-data Accion = Inscribir | Reparar | Optimizar | Ferrarizar deriving (Show, Ord, Eq)
-
+type Accion = Auto -> Auto
+type Costo = Auto -> Number
 -- a. Modelar un equipo de competición y agregar un auto a un equipo
 holaMundoTeam :: Equipo
 holaMundoTeam = UnEquipo { nombre = "HolaMundo", autos = [], presupuesto = 70000 }
 
 agregarAuto :: Equipo -> Auto -> Equipo
 agregarAuto equipo auto
-  | tienePresupuestoParaAccion Inscribir auto (presupuesto equipo) = equipo { autos = autos equipo ++ [auto], presupuesto = presupuesto equipo - calcularCostoAccion Inscribir auto }
+  | costoInscripcion auto < presupuesto equipo = equipo { autos = autos equipo ++ [auto], presupuesto = presupuesto equipo - costoInscripcion auto }
   | otherwise = equipo
 
-tienePresupuestoParaAccion :: Accion -> Auto -> Number -> Bool
-tienePresupuestoParaAccion accion auto presupuestoEquipo = ((<presupuestoEquipo) . calcularCostoAccion accion) auto
+-- Costos de las acciones
+costoInscripcion :: Costo
+costoInscripcion auto = (*1000) (velocidadMáxima auto)
 
-calcularCostoAccion :: Accion -> Auto -> Number
-calcularCostoAccion Inscribir auto = (*1000) (velocidadMáxima auto)
-calcularCostoAccion Optimizar auto = (*100) (velocidadMáxima auto)
-calcularCostoAccion Reparar auto = ((*500) . (*0.85)) (desgasteChasis auto)
-calcularCostoAccion Ferrarizar auto 
-  | marca auto == Ferrari = 0
-  | otherwise = 3500
+costoOptimizacion :: Costo
+costoOptimizacion auto = (*100) (velocidadMáxima auto)
 
--- b. c. d. -> Reparar, optimizar y ferrarizar en equipo
-realizarAccionEnEquipo :: Accion -> Equipo -> Equipo
-realizarAccionEnEquipo accion equipo = equipo { autos = realizarAccionAutos accion (presupuesto equipo) (autos equipo), presupuesto = determinarPresupuestoRestante accion (presupuesto equipo) (autos equipo) } 
+costoReparacion :: Costo
+costoReparacion auto = ((*500) . (*0.85)) (desgasteChasis auto)
 
-determinarPresupuestoRestante :: Accion -> Number -> [Auto] -> Number
-determinarPresupuestoRestante _ presupuesto [] = presupuesto
-determinarPresupuestoRestante accion presupuesto (x:xs)
-  | tienePresupuestoParaAccion accion x presupuesto = determinarPresupuestoRestante accion (presupuesto - calcularCostoAccion accion x) xs
-  | otherwise = presupuesto
+costoFerrarizacion :: Costo
+costoFerrarizacion UnAuto { marca = Ferrari } = 0
+costoFerrarizacion _ = 3500
 
-realizarAccionAutos :: Accion -> Number -> [Auto] -> [Auto]
-realizarAccionAutos _ presupuesto [] = []
-realizarAccionAutos accion presupuesto (x:xs)
-  | tienePresupuestoParaAccion accion x presupuesto = aplicarAccion accion x : realizarAccionAutos accion (presupuesto - calcularCostoAccion accion x) xs
-  | otherwise = x:xs
+-- Acciones sobre los autos
+reparar :: Accion
+reparar = repararAuto 
 
-aplicarAccion :: Accion -> Auto -> Auto
-aplicarAccion Reparar auto = repararAuto auto 
-aplicarAccion Optimizar auto = ponerNitro auto
-aplicarAccion Ferrarizar auto
+optimizar :: Accion
+optimizar = ponerNitro 
+
+ferrarizar :: Accion
+ferrarizar  auto
   | marca auto == Ferrari = auto
   | otherwise = desarmadero auto Ferrari F50
+
+-- b. c. d. -> Reparar, optimizar y ferrarizar en equipo
+realizarAccionEnEquipo :: Costo -> Accion -> Equipo -> Equipo
+realizarAccionEnEquipo costoAccion accion equipo = equipo { autos = realizarAccionAutos costoAccion accion (presupuesto equipo) (autos equipo), presupuesto = determinarPresupuestoRestante costoAccion (presupuesto equipo) (autos equipo) } 
+
+determinarPresupuestoRestante :: Costo -> Number -> [Auto] -> Number
+determinarPresupuestoRestante _ presupuesto [] = presupuesto
+determinarPresupuestoRestante costoAccion presupuesto (x:xs)
+  | costoAccion x < presupuesto = determinarPresupuestoRestante costoAccion (presupuesto - costoAccion x) xs
+  | otherwise = presupuesto
+
+realizarAccionAutos :: Costo -> Accion -> Number -> [Auto] -> [Auto]
+realizarAccionAutos _ _ presupuesto [] = []
+realizarAccionAutos costoAccion accion presupuesto (x:xs)
+  | costoAccion x < presupuesto =  accion x : realizarAccionAutos costoAccion accion (presupuesto - costoAccion x) xs
+  | otherwise = x:xs
+
 
 -- 2. Calcular costo accion total
 
 calcularCostoReparacionTotal :: Equipo -> Number
-calcularCostoReparacionTotal  = calcularCostoAccionTotal Reparar 
+calcularCostoReparacionTotal  = calcularCostoAccionTotal costoReparacion 
 
-calcularCostoAccionTotal :: Accion -> Equipo -> Number
-calcularCostoAccionTotal accion equipo = foldr ((+) . calcularCostoAccion accion) 0 (autos equipo)
+calcularCostoAccionTotal :: Costo -> Equipo -> Number
+calcularCostoAccionTotal costoAccion equipo = sum (map costoAccion (autos equipo))
 
 -- 3. Infinia
 
@@ -425,16 +434,19 @@ obtenerVueltaEspecifica resultadosParciales numeroVuelta = resultadosParciales !
 obtenerTiempoPorVuelta :: [Auto] -> Auto -> Number
 obtenerTiempoPorVuelta autosVueltaSeleccionada autoBuscado = tiempoCarrera (head (filter ((== marca autoBuscado) . marca) autosVueltaSeleccionada))
 
--- Funciones auxiliares para definir posiciones de carrera segun una vuelta
-
-buscarAutoPorTiempo :: [Auto] -> Number -> Auto
-buscarAutoPorTiempo autos tiempoBuscado = head (filter ((==tiempoBuscado).tiempoCarrera) autos)
-
-ordenarTiemposDeCarrera :: [Auto] -> [Number]
-ordenarTiemposDeCarrera autos = sort (map tiempoCarrera autos)
-
 definirPosicionesFinVuelta :: [Auto] -> [Auto]
-definirPosicionesFinVuelta autosDeLaVuelta = map (buscarAutoPorTiempo autosDeLaVuelta) (ordenarTiemposDeCarrera autosDeLaVuelta)
+definirPosicionesFinVuelta [] = []
+definirPosicionesFinVuelta [x] = [x]
+definirPosicionesFinVuelta autos
+  | ordenarPorTiemposDeCarrera autos == autos = autos
+  | otherwise = definirPosicionesFinVuelta (ordenarPorTiemposDeCarrera (ordenarPorTiemposDeCarrera autos))
+
+ordenarPorTiemposDeCarrera :: [Auto] -> [Auto]
+ordenarPorTiemposDeCarrera [] = []
+ordenarPorTiemposDeCarrera [x] = [x]
+ordenarPorTiemposDeCarrera (x:y:xs) 
+  | tiempoCarrera x < tiempoCarrera y = x : ordenarPorTiemposDeCarrera (y:xs)
+  | otherwise = y : ordenarPorTiemposDeCarrera (x:xs)  
 
 -- Funciones auxiliares para las pruebas
 
