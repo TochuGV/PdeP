@@ -73,6 +73,9 @@ popularidad(gudetama, 1).
 popularidad(littleTwinStars, 2).
 popularidad(kuromi, 5).
 
+personajes(Personajes):-
+  findall(Personaje, popularidad(Personaje, _), Personajes).
+
 figurita(1, rareza(basica), [kitty, keroppi]).
 figurita(2, rareza(brillante), [kitty]).
 figurita(3, rareza(brillante), [myMelody]).
@@ -80,9 +83,10 @@ figurita(4, rareza(basica), []).
 figurita(5, parte(rompecabezas(restaurante))).
 figurita(6, parte(rompecabezas(restaurante))).
 figurita(7, parte(rompecabezas(restaurante))).
-figurita(8, rareza(basica), [kitty, cinnamoroll, badtzMaru, keroppi, pompompurin, myMelody, gudetama, littleTwinStars, kuromi]).
+figurita(8, rareza(basica), Personajes):-
+  personajes(Personajes).
 %figurita(9, parte(rompecabezas(restaurante))).
-%figurita(10, parte(rompecabezas(parque))).
+%figurita(10, parte(rompecabezas(restaurante))).
 
 % Punto 5
 
@@ -97,23 +101,25 @@ esValiosa(Figurita):-
   atractivo(Figurita, Atractivo),
   Atractivo > 7.
 
-atractivo(Figurita, Atractivo):-
-  figurita(Figurita, rareza(brillante), Personajes),
-  findall(Popularidad, (member(Personaje, Personajes), popularidad(Personaje, Popularidad)), Popularidades),
+atractivoRompecabezas(Cantidad, 2):- Cantidad < 2.
+atractivoRompecabezas(Cantidad, 0):- Cantidad >= 2.
+
+atractivoTotal(Figurita, Popularidades, AtractivoTotal):-
+  figurita(Figurita, rareza(brillante), _),
   sumlist(Popularidades, Suma),
-  Atractivo is 5 * Suma.
+  AtractivoTotal is 5 * Suma.
+atractivoTotal(Figurita, Popularidades, AtractivoTotal):-
+  figurita(Figurita, rareza(basica), _),
+  sumlist(Popularidades, AtractivoTotal). 
+
 atractivo(Figurita, Atractivo):-
-  figurita(Figurita, rareza(basica), Personajes),
+  figurita(Figurita, rareza(_), Personajes),
   findall(Popularidad, (member(Personaje, Personajes), popularidad(Personaje, Popularidad)), Popularidades),
-  sumlist(Popularidades, Atractivo).
-atractivo(Figurita, 2):-
+  atractivoTotal(Figurita, Popularidades, Atractivo).
+atractivo(Figurita, Atractivo):-
   figurita(Figurita, parte(rompecabezas(Rompecabezas))),
   cantidadPartesRompecabezas(Cantidad, Rompecabezas),
-  Cantidad =< 2.
-atractivo(Figurita, 0):-
-  figurita(Figurita, parte(rompecabezas(Rompecabezas))),
-  cantidadPartesRompecabezas(Cantidad, Rompecabezas),
-  Cantidad > 2.
+  atractivoRompecabezas(Cantidad, Atractivo).
 
 % Punto 6
 
@@ -121,7 +127,11 @@ imagenMasAtractiva(Persona, Figurita):-
   coleccionista(Persona, figurita(Figurita), _),
   figurita(Figurita, _, _),
   atractivo(Figurita, Atractivo),
-  forall((coleccionista(Persona, figurita(OtraFigurita), _), OtraFigurita \= Figurita, atractivo(OtraFigurita, OtroAtractivo)), Atractivo >= OtroAtractivo).
+  forall((coleccionista(Persona, figurita(OtraFigurita), _), Figurita \= OtraFigurita), esMasAtractiva(Atractivo, OtraFigurita, OtroAtractivo)).
+
+esMasAtractiva(Atractivo, OtraFigurita, OtroAtractivo):-
+  atractivo(OtraFigurita, OtroAtractivo),
+  Atractivo >= OtroAtractivo.
 
 % Punto 7
 
@@ -217,14 +227,14 @@ haceNegocioEnAlguno(Persona, Canjes):-
   member(canje(FiguritasEntregadas, OtraPersona, FiguritasRecibidas), Canjes),
   haceNegocio(Persona, FiguritasEntregadas, OtraPersona, FiguritasRecibidas).
 
+pierdeEnAlguno(Persona, Canjes) :-
+  member(canje(FiguritasEntregadas, OtraPersona, FiguritasRecibidas), Canjes),
+  queTanInteresanteEs(Persona, FiguritasEntregadas, InteresEntregadas),
+  queTanInteresanteEs(OtraPersona, FiguritasRecibidas, InteresRecibidas),
+  InteresRecibidas =< InteresEntregadas.
+
 saleGanandoEnTodos(Persona, Canjes):-
-  forall(member(canje(FiguritasEntregadas, OtraPersona, FiguritasRecibidas), Canjes),
-    (
-    queTanInteresanteEs(Persona, FiguritasEntregadas, InteresEntregadas),
-    queTanInteresanteEs(OtraPersona, FiguritasRecibidas, InteresRecibidas),
-    InteresRecibidas > InteresEntregadas
-    )
-  ).
+  not(pierdeEnAlguno(Persona, Canjes)).
 
 esAmenaza(Persona, Canjes):-
   haceNegocioEnAlguno(Persona, Canjes),
