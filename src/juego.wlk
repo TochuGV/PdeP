@@ -10,7 +10,7 @@ object juego {
     columnaRoja.aparecer();
     columnaAzul.aparecer();
   }
- 
+
   method intercambiarColores(){
     cuadradoUno.intercambiar();
     cuadradoDos.intercambiar();
@@ -79,7 +79,7 @@ object columnaRoja{
       game.onTick(100, "desplazarse", {self.desplazarse()})
     }
 
-   method desplazarse(){
+  method desplazarse(){
       if(!self.colisiona()){
         if(position.x() > 0){
           position = position.left(1)
@@ -92,7 +92,7 @@ object columnaRoja{
           game.removeVisual(cuadradoDos);
         }
       }
-   }
+  }
   method coincideConColorCuadrado() = (cuadradoUno.image() == "rojo.jpg")
   method colisiona() = (position.x() - 1 == cuadradoUno.position().x())
   
@@ -124,7 +124,7 @@ object columnaAzul{
           game.removeVisual(cuadradoDos);
         }
       }
-   }
+  }
   method coincideConColorCuadrado() = (cuadradoDos.image() == "azul.jpg")
   method colisiona() = (position.x() - 1 == cuadradoUno.position().x())
   
