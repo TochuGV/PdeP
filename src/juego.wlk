@@ -1,5 +1,26 @@
 import wollok.game.*
 
+/*
+src
+  entidades
+    cuadrado.wlk
+    cuadradoEstatico.wlk
+    cuadradoDinamico.wlk
+    flechaIndicadora.wlk
+    pista.wlk
+  modificadores
+    modificador.wlk
+    multicolor.wlk
+    lentitud.wlk
+    duplicadorPuntuacion.wlk
+  modos
+    niveles.wlk
+    infinito.wlk
+  juego.wlk
+  programa.wpgm
+assets
+*/
+
 object juego {
 
   var alternado = false;
