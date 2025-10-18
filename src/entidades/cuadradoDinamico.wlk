@@ -7,12 +7,8 @@ class CuadradoDinamico inherits Cuadrado {
     position = position.left(1);
   }
 
-  method seleccionarColor(){
-    // seleccionar color random de la lista de colores
-  }
-
   method verificarColision(){
-    // misma pos en "x" que el cuadrado estatico
+    position.x() == juego.cuadradoBase1.position().x()
   }
 
   method coincideConColor(){
@@ -23,9 +19,9 @@ class CuadradoDinamico inherits Cuadrado {
     game.onTick(velocidad, "movimientoCuadrado", { self.avanzar() });
   }
 
-  /*
   method desaparecer(){
-    
+    game.removeVisual(self);
   }
-  */
+
+
 }

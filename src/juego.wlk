@@ -1,6 +1,8 @@
+import src.entidades.nivel.*
 import wollok.game.*
 import entidades.cuadradoDinamico.*
 import entidades.*
+
 /*
 src
   entidades
@@ -24,23 +26,22 @@ assets
 
 object juego {
   var property cuadradosDinamicos = [];
-  const property tiempoGeneracionCuadrados = 2000;
-  const property velocidadDeMovimiento = 500;
   method iniciar(){
   /*self.generarCuadradosEstaticos();*/
-    self.generarCuadradosDinamicos();
+  const nivel = new Nivel(colores = ["azul.jpg", "rojo.jpg"], velocidadDeGeneracion = 5000, velocidadDeMovimiento = 500, cantidadDeMatcheosParaGanar = 10);
+  self.generarCuadradosDinamicos(nivel.velocidadDeGeneracion(), nivel.velocidadDeMovimiento(), nivel.colores());
   }
 
   method generarCuadradosEstaticos(){
     // Genera dos cuadrados estaticos
   }
   
-  method generarCuadradosDinamicos(){
-    game.onTick(tiempoGeneracionCuadrados, "cuadradosDinamicos", {self.generarCuadradoDinamico()});
+  method generarCuadradosDinamicos(velocidadDeGeneracion, velocidadDeMovimiento, colores){
+    game.onTick(velocidadDeGeneracion, "cuadradosDinamicos", {self.generarCuadradoDinamico(velocidadDeMovimiento, colores)});
   }
 
-  method generarCuadradoDinamico(){
-    const nuevoCuadrado = new CuadradoDinamico(image = "azul.jpg", position = game.center());
+  method generarCuadradoDinamico(velocidadDeMovimiento, colores){
+    const nuevoCuadrado = new CuadradoDinamico(image = colores.anyOne(), position = game.center());
     cuadradosDinamicos.add(nuevoCuadrado);
     game.addVisual(nuevoCuadrado);
     nuevoCuadrado.iniciarMovimiento(velocidadDeMovimiento);
