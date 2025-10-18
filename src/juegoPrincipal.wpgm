@@ -2,14 +2,9 @@ import wollok.game.*
 import juego.*
 
 program juegoPrincipal {
-game.width(30);
-game.height(6);
-game.title('Switch! - Prototipo')
+game.width(50);
+game.height(50);
+game.title('Switch!');
 juego.iniciar();
 game.start();
-
-// Eventos de teclado
-keyboard.s().onPressDo{juego.intercambiarColores()};
-keyboard.a().onPressDo{juego.cambiarModo()};
-
 }

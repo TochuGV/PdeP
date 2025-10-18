@@ -1,6 +1,6 @@
 import wollok.game.*
 
 class Pista {
-  var property color
-  var property posicion
+  var property image;
+  var property position;
 }

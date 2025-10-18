@@ -2,10 +2,9 @@ import wollok.game.*
 import cuadrado.*
 
 class CuadradoDinamico inherits Cuadrado {
-  
 
   method avanzar(){
-    //moverse una pos a la izquierda
+    position = position.left(1);
   }
 
   method seleccionarColor(){
@@ -20,8 +19,13 @@ class CuadradoDinamico inherits Cuadrado {
     // misma url de imagen que el cuadrado estatico (o indice de array)
   }
 
-  method iniciarMovimiento(){
-    // tick del juego con "avanzar"
+  method iniciarMovimiento(velocidad){
+    game.onTick(velocidad, "movimientoCuadrado", { self.avanzar() });
   }
 
+  /*
+  method desaparecer(){
+    
+  }
+  */
 }
