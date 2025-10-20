@@ -2,10 +2,10 @@ import wollok.game.*
 import juego.*
 
 program juegoPrincipal {
-game.cellSize(5);
-game.width(216); // 1080 / 5
-game.height(108); // 540 / 5
-game.title('Switch!');
-juego.iniciar();
-game.start();
+  game.cellSize(3);
+  game.width(1080 / 3); // 1080 / 5
+  game.height(540 / 3); // 540 / 5
+  game.title('Switch!');
+  juego.iniciar();
+  game.start();
 }
