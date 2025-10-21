@@ -4,8 +4,20 @@ import cuadrado.*
 class CuadradoDinamico inherits Cuadrado {
 
   method avanzar(){
-    position = position.left(1); // ver si podemos hacerlo mas corto o mas rapido la velocidad
-    //self.verificarMatch();
+    position = game.at(position.x() - 0.5, position.y());
+  }
+  
+  method coincideConColor(){
+    // misma url de imagen que el cuadrado estatico (o indice de array)
+  }
+
+  method iniciarMovimiento(velocidad){
+    game.onTick(velocidad, "movimientoCuadrado", { self.avanzar() });
+    //game.onTick(velocidad, "colisionCuadradoEstatico", { self.verificarColision() });
+  }
+
+  method desaparecer(){
+    game.removeVisual(self);
   }
 
   /*
@@ -43,16 +55,4 @@ if (position.y() == juego.cuadradoEstatico2.position().y()) {
 
 
 */
-  method coincideConColor(){
-    // misma url de imagen que el cuadrado estatico (o indice de array)
-  }
-
-  method iniciarMovimiento(velocidad){
-    game.onTick(velocidad, "movimientoCuadrado", { self.avanzar() });
-    //game.onTick(velocidad, "colisionCuadradoEstatico", { self.verificarColision() });
-  }
-
-  method desaparecer(){
-    game.removeVisual(self);
-  }
 }

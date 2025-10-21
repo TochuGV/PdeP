@@ -3,7 +3,6 @@ import entidades.cuadradoDinamico.*
 import entidades.cuadradoEstatico.*
 import entidades.pista.*
 import entidades.nivel.*
-
 /*
 src
   entidades
@@ -33,22 +32,10 @@ object juego {
     const nivel = new Nivel(
       colores = ["azul.jpg", "rojo.jpg"],
       velocidadDeGeneracion = 5000,
-      velocidadDeMovimiento = 100,
+      velocidadDeMovimiento = 200,
       cantidadDeMatcheosParaGanar = 10
     );
     nivel.iniciar();
   }
 
-  /*
-  //self.generarCuadradosDinamicos(nivel.velocidadDeGeneracion(), nivel.velocidadDeMovimiento(), nivel.colores());
-  method generarCuadradosDinamicos(velocidadDeGeneracion, velocidadDeMovimiento, colores){
-    game.onTick(velocidadDeGeneracion, "cuadradosDinamicos", { self.generarCuadradoDinamico(velocidadDeMovimiento, colores) });
-  }
-
-  method generarCuadradoDinamico(velocidadDeMovimiento, colores){
-    const nuevoCuadrado = new CuadradoDinamico(image = colores.anyOne(), position = game.center());
-    cuadradosDinamicos.add(nuevoCuadrado);
-    game.addVisual(nuevoCuadrado);
-    nuevoCuadrado.iniciarMovimiento(velocidadDeMovimiento/*, cuadradosEstaticos*///);
-  //}
 }
