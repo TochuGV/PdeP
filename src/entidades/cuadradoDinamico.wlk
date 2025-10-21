@@ -5,9 +5,10 @@ class CuadradoDinamico inherits Cuadrado {
 
   method avanzar(){
     position = position.left(1); // ver si podemos hacerlo mas corto o mas rapido la velocidad
-    self.verificarMatch();
+    //self.verificarMatch();
   }
 
+  /*
   method verificarMatch(){
     const cuadradoEstaticoConElQueColisiona = self.obtenerCuadradoEstatico();
   }
@@ -19,6 +20,7 @@ class CuadradoDinamico inherits Cuadrado {
   method verificarColision(cuadrado){
     return position.x() == cuadrado.position().x()
   }
+  */
 
 
 
@@ -47,7 +49,7 @@ if (position.y() == juego.cuadradoEstatico2.position().y()) {
 
   method iniciarMovimiento(velocidad){
     game.onTick(velocidad, "movimientoCuadrado", { self.avanzar() });
-    game.onTick(velocidad, "colisionCuadradoEstatico", { self.verificarColision() });
+    //game.onTick(velocidad, "colisionCuadradoEstatico", { self.verificarColision() });
   }
 
   method desaparecer(){

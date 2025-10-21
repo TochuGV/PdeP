@@ -6,7 +6,7 @@ import entidades.nivel.*
 class Pista {
   var property image;
   var property position;
-  var property cuadradoEstatico = new CuadradoEstatico(image = image, position = position);
+  var property cuadradoEstatico = new CuadradoEstatico(image = "columna-azul.jpg", position = position.right(1).down(1));
   
   method iniciar(nivel){
     game.addVisual(cuadradoEstatico);
