@@ -1,0 +1,32 @@
+import entidades.nivel.*;
+import entidades.puntaje.*
+import entidades.cuadradoEstatico.*
+import wollok.game.*
+
+describe "Niveles" {
+  test "Hay dos pistas" {
+    const nivel = new Nivel(
+      colores = ["azul.jpg", "rojo.jpg"],
+      velocidadDeGeneracion = 500,
+      velocidadDeMovimiento = 200,
+      cantidadDeMatcheosParaGanar = 5
+    )
+    nivel.iniciar()
+    assert.equals(2, nivel.pistas().size())
+  }
+}
+
+describe "Puntos" {
+  test "Se suman puntos" {
+    puntaje.sumarPuntos(100)
+    assert.equals(100, puntaje.puntos())
+  }
+}
+
+describe "CuadradoEstatico" {
+  test "Se cambia de color de rojo a azul" {    
+    const cuadrado = new CuadradoEstatico(image = "rojo.jpg", position = game.center())
+    cuadrado.cambiarImagen("azul.jpg") 
+    assert.equals("azul.jpg", cuadrado.image())
+  }
+}
