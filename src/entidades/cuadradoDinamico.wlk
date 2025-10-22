@@ -16,9 +16,7 @@ class CuadradoDinamico inherits Cuadrado {
     //game.onTick(velocidad, "colisionCuadradoEstatico", { self.verificarColision() });
   }
 
-  method desaparecer(){
-    game.removeVisual(self);
-  }
+
 
   /*
   method verificarMatch(){

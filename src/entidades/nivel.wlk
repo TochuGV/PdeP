@@ -7,7 +7,8 @@ class Nivel {
   const velocidadDeGeneracion;
   const velocidadDeMovimiento;
   const cantidadDeMatcheosParaGanar;
-  const posicionesDePistas = [game.at(1,540 / 50 - 150 / 50), game.at(1,(540 / 50) - (150 / 50) *2 )]; //HARDCODED
+  var cantidadDeMatcheosActual = 0;
+  const posicionesDePistas = [game.at(1,540 / 50 - 150 / 50), game.at(1,(540 / 50) - (150 / 50) *2.5)]; //HARDCODED
   const pistas = [];
   var flechaIndicadora = null;
 
@@ -15,6 +16,8 @@ class Nivel {
   method velocidadDeGeneracion () = velocidadDeGeneracion;
   method velocidadDeMovimiento () = velocidadDeMovimiento;
   method cantidadDeMatcheosParaGanar () = cantidadDeMatcheosParaGanar;
+  method cantidadDeMatcheosActual () = cantidadDeMatcheosActual;
+  method pistas () = pistas;
 
   method iniciar(){
     puntaje.aparecer();
@@ -27,7 +30,7 @@ class Nivel {
       indiceColor = (indiceColor + 1) % colores.size();
     });
 
-    flechaIndicadora = new FlechaIndicadora( pistas = pistas);
+    flechaIndicadora = new FlechaIndicadora(pistas = pistas);
     flechaIndicadora.aparecer();
     self.agregarEventoDeColision();
   }
@@ -52,4 +55,16 @@ class Nivel {
   }
 
   method todasLasPistasHacenMatch() = pistas.all({pista => pista.hayMatch()})
+
+  method aumentarCantidadDeMatcheosActual(){
+    cantidadDeMatcheosActual += 1;
+  }
+  
+  /*
+  method ganar(){
+    if(cantidadDeMatcheosActual == cantidadDeMatcheosParaGanar){
+      //Mostrar un texto de victoria.
+    }
+  }
+  */
 }

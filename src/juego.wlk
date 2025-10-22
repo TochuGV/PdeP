@@ -37,5 +37,4 @@ object juego {
     );
     nivel.iniciar();
   }
-
 }
