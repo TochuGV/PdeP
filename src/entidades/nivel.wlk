@@ -10,7 +10,6 @@ class Nivel {
   var cantidadDeMatcheosActual = 0;
   const posicionesDePistas = [game.at(1,540 / 50 - 150 / 50), game.at(1,(540 / 50) - (150 / 50) *2.5)]; //HARDCODED
   const pistas = [];
-  var flechaIndicadora = null;
 
   method colores () = colores;
   method velocidadDeGeneracion () = velocidadDeGeneracion;
@@ -30,7 +29,7 @@ class Nivel {
       indiceColor = (indiceColor + 1) % colores.size();
     });
 
-    flechaIndicadora = new FlechaIndicadora(pistas = pistas);
+    flechaIndicadora.pistas(pistas);
     flechaIndicadora.aparecer();
     self.agregarEventoDeColision();
   }

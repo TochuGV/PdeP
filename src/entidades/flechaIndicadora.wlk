@@ -1,11 +1,11 @@
 import wollok.game.*
 
-class FlechaIndicadora {
-
-  method image() = "flecha.jpg";
+object flechaIndicadora {  
   var property position = game.origin();
   var property indicePistaApuntada = 0;
-  const pistas = [];
+  var property pistas = [];
+
+  method image() = "flecha.jpg";
 
   method aparecer(){
     position = self.calcularPosicion();
@@ -29,7 +29,7 @@ class FlechaIndicadora {
   method obtenerPistaSiguiente(direccion){
     const nuevaPosicion = indicePistaApuntada + direccion;
     if(nuevaPosicion >= pistas.size()) return 0;
-    if(nuevaPosicion < 0) return pistas.size() -1;
+    if(nuevaPosicion < 0) return pistas.size() - 1;
     return nuevaPosicion;
   }
 }
