@@ -8,7 +8,7 @@ class Cuadrado {
     game.addVisual(self);
   }
 
-  method cambiarImagen(nuevaImagen){
+  method cambiarImagen(nuevaImagen){ //Hay que mover este método al cuadrado estático
     image = nuevaImagen;
   }
 

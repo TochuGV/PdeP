@@ -2,6 +2,7 @@ import wollok.game.*
 import entidades.pista.*
 import entidades.puntaje.*
 import entidades.flechaIndicadora.*
+
 class Nivel {
   const colores = [];
   const velocidadDeGeneracion;
@@ -23,7 +24,11 @@ class Nivel {
 
     var indiceColor = 0
     posicionesDePistas.forEach({ posicionBase =>
-      const nuevaPista = new Pista(colores = colores, indiceColorActual = indiceColor, position = posicionBase);
+      const nuevaPista = new Pista(
+        colores = colores, 
+        indiceColorActual = indiceColor, 
+        position = posicionBase
+      );
       pistas.add(nuevaPista);
       nuevaPista.iniciar(self);
       indiceColor = (indiceColor + 1) % colores.size();
