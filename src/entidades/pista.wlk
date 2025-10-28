@@ -2,7 +2,6 @@ import wollok.game.*
 import entidades.cuadradoEstatico.*
 import entidades.cuadradoDinamico.*
 import entidades.nivel.*
-
 class Pista {
   var property colores;
   var property indiceColorActual;
@@ -46,6 +45,7 @@ class Pista {
     cuadradosDinamicos.add(nuevoCuadrado);
     nuevoCuadrado.aparecer();
     nuevoCuadrado.iniciarMovimiento(velocidadDeMovimiento);
+
   }
 
   method removerCuadradoDinamico(){
@@ -57,7 +57,7 @@ class Pista {
   }
 
   method cuadradoEstatico() = cuadradoEstatico
-  method hayMatch() = cuadradoEstatico.image() == "columna-" + cuadradosDinamicos.first().image();
+  method hayMatch() = cuadradoEstatico.image() == cuadradosDinamicos.first().image();
 
   method actualizarColor(){
     self.image("pista-" + cuadradoEstatico.image())
