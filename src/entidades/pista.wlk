@@ -4,14 +4,27 @@ import entidades.cuadradoDinamico.*
 import entidades.nivel.*
 
 class Pista {
+  var property colores;
   var property indiceColorActual;
-  const colores = [];
-  var property image = colores.get(indiceColorActual);
+  var property image = null;
   var property position;
+  var cuadradoEstatico = null;
   var property cuadradosDinamicos = [];
-  var property cuadradoEstatico = new CuadradoEstatico(image = "columna-" + image, position = position);
 
   method iniciar(nivel){
+    const colorActual = colores.get(indiceColorActual)
+    const imagenPista = "pista-" + colorActual
+
+    self.image(imagenPista)
+    game.addVisual(self)
+
+    const posicionCuadradoEstatico = game.at(self.position().x(), self.position().y() + 1)
+
+    cuadradoEstatico = new CuadradoEstatico(
+      nivel = nivel,
+      image = colorActual,
+      position = posicionCuadradoEstatico
+    )
     cuadradoEstatico.aparecer();
     self.generarCuadradosDinamicos(nivel.velocidadDeGeneracion(), nivel.velocidadDeMovimiento());
   }
@@ -34,11 +47,17 @@ class Pista {
       cuadradosDinamicos.remove(cuadradoARemover);
     }
   }
+
+  method cuadradoEstatico() = cuadradoEstatico
   
   method hayMatch() = cuadradoEstatico.image() == "columna-" + cuadradosDinamicos.first().image();
 
+  method actualizarColor(){
+    self.image("pista-" + cuadradoEstatico.image())
+  }
+
   method cambiarColor(){
-    indiceColorActual = (indiceColorActual + 1) % colores.size();
-    cuadradoEstatico.cambiarImagen("columna-" + colores.get(indiceColorActual));
+    cuadradoEstatico.cambiarColor();
+    self.actualizarColor();
   }
 }
