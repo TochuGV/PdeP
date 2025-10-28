@@ -14,4 +14,7 @@ class CuadradoEstatico inherits Cuadrado {
   //Habría que pasar el nivel por parámetro para obtener el listado colores.
   //En base a eso, ir cambiando el índice según el tamaño de la colección.
   //Luego, modificar la imagen del cuadrado según el índice.
+
+  //Se podría agregar una validación de que la cantidad de elementos de la lista sea mayor a 0
+  //No es algo que sea necesario igualmente
 }

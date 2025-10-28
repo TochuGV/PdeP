@@ -18,7 +18,11 @@ class Pista {
     self.image(imagenPista)
     game.addVisual(self)
 
-    const posicionCuadradoEstatico = game.at(self.position().x(), self.position().y() + 1)
+    const posicionCuadradoEstatico = game.at(position.x() + 1, position.y())
+    //Está puesto así porque sin el '+1' se rompe el programa
+    //Igualmente, ahora lo que ocurre es que solamente aparecen una vez los cuadrados dinámicos
+    //Después, sin importar si coinciden o no, el color del cuadrado estático no se puede cambiar
+    //Se cambia solo el color de la pista, y los cuadrados dinámicos ya no aparecen.
 
     cuadradoEstatico = new CuadradoEstatico(
       nivel = nivel,
@@ -30,11 +34,15 @@ class Pista {
   }
 
   method generarCuadradosDinamicos(velocidadDeGeneracion, velocidadDeMovimiento){
-    game.onTick(velocidadDeGeneracion, "generarCuadradosDinamicos", { self.generarCuadradoDinamico(colores.anyOne(), velocidadDeMovimiento) });
+    game.onTick(velocidadDeGeneracion, "generarCuadradosDinamicos", { 
+      self.generarCuadradoDinamico(colores.anyOne(), velocidadDeMovimiento) 
+    });
   }
 
   method generarCuadradoDinamico(color, velocidadDeMovimiento){
-    const nuevoCuadrado = new CuadradoDinamico(image = color, position = game.at(10, position.y()));
+    const nuevoCuadrado = new CuadradoDinamico(
+      image = color, 
+      position = game.at(position.x() + 10, position.y()));
     cuadradosDinamicos.add(nuevoCuadrado);
     nuevoCuadrado.aparecer();
     nuevoCuadrado.iniciarMovimiento(velocidadDeMovimiento);
@@ -49,7 +57,6 @@ class Pista {
   }
 
   method cuadradoEstatico() = cuadradoEstatico
-  
   method hayMatch() = cuadradoEstatico.image() == "columna-" + cuadradosDinamicos.first().image();
 
   method actualizarColor(){

@@ -8,7 +8,7 @@ class Nivel {
   const velocidadDeGeneracion;
   const velocidadDeMovimiento;
   const cantidadDeMatcheosParaGanar;
-  var cantidadDeMatcheosActual = 0;
+  var cantidadDeCoincidenciasActual = 0;
   const posicionesDePistas = [game.at(1,540 / 50 - 150 / 50), game.at(1,(540 / 50) - (150 / 50) *2.5)]; //HARDCODED
   const pistas = [];
 
@@ -16,7 +16,7 @@ class Nivel {
   method velocidadDeGeneracion () = velocidadDeGeneracion;
   method velocidadDeMovimiento () = velocidadDeMovimiento;
   method cantidadDeMatcheosParaGanar () = cantidadDeMatcheosParaGanar;
-  method cantidadDeMatcheosActual () = cantidadDeMatcheosActual;
+  method cantidadDeCoincidenciasActual () = cantidadDeCoincidenciasActual;
   method pistas () = pistas;
 
   method iniciar(){
@@ -60,8 +60,8 @@ class Nivel {
 
   method todasLasPistasHacenMatch() = pistas.all({pista => pista.hayMatch()})
 
-  method aumentarCantidadDeMatcheosActual(){
-    cantidadDeMatcheosActual += 1;
+  method aumentarCantidadDeCoincidenciasActual(){
+    cantidadDeCoincidenciasActual += 1;
   }
   
   /*
