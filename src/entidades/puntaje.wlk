@@ -1,7 +1,7 @@
 object puntaje {
   var property puntos = 0;
 
-  method position() = game.center();
+  method position() = game.origin();
   method text() = "Puntos: " + puntos;
 
   method sumarPuntos(cantidad){
