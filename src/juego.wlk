@@ -34,7 +34,7 @@ object juego {
       colores = ["azul.jpg", "rojo.jpg"],
       velocidadDeGeneracion = 5000,
       velocidadDeMovimiento = 200,
-      cantidadDeMatcheosParaGanar = 10
+      cantidadDeCoincidenciasParaGanar = 10
     );
     nivel.iniciar();
   }

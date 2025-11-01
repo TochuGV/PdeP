@@ -7,22 +7,26 @@ class Nivel {
   const colores = [];
   const velocidadDeGeneracion;
   const velocidadDeMovimiento;
-  const cantidadDeMatcheosParaGanar;
+  const cantidadDeCoincidenciasParaGanar;
   var cantidadDeCoincidenciasActual = 0;
-  const posicionesDePistas = [game.at(1,540 / 50 - 150 / 50), game.at(1,(540 / 50) - (150 / 50) *2.5)]; //HARDCODED
+  const alturaBase = (540 / 50) - (150 / 50);
+  const separadorDePosicionesDePistas = 2.25;
+  const posicionesDePistas = [game.at(2, alturaBase), game.at(2, (540 / 50) - (150 / 50) * separadorDePosicionesDePistas)];
+  // La segunda pista hay que escribirla de esa forma porque sino no aparece.
+  // Habría que buscar una forma de hacer que tome la altura de la pantalla y las dimensiones de los cuadrados.
   const pistas = [];
 
   method colores () = colores;
   method velocidadDeGeneracion () = velocidadDeGeneracion;
   method velocidadDeMovimiento () = velocidadDeMovimiento;
-  method cantidadDeMatcheosParaGanar () = cantidadDeMatcheosParaGanar;
+  method cantidadDeCoincidenciasParaGanar () = cantidadDeCoincidenciasParaGanar;
   method cantidadDeCoincidenciasActual () = cantidadDeCoincidenciasActual;
   method pistas () = pistas;
 
   method iniciar(){
     puntaje.aparecer();
 
-    var indiceColor = 0
+    var indiceColor = 0;
     posicionesDePistas.forEach({ posicionBase =>
       const nuevaPista = new Pista(
         colores = colores, 
@@ -47,7 +51,11 @@ class Nivel {
   method verificarResultado(){
     if(self.todasLasPistasHacenMatch()){
       puntaje.sumarPuntos(10);
-      pistas.forEach({pista => pista.removerCuadradoDinamico()})
+      pistas.forEach({ pista => pista.removerCuadradoDinamico() });
+      self.aumentarCantidadDeCoincidenciasActual();
+      //if (cantidadDeCoincidenciasActual == 10) {
+        //self.aumentarDificultad();
+      //}
     } else {
       self.perder();
     }
@@ -63,10 +71,10 @@ class Nivel {
   method aumentarCantidadDeCoincidenciasActual(){
     cantidadDeCoincidenciasActual += 1;
   }
-  
+
   /*
   method ganar(){
-    if(cantidadDeMatcheosActual == cantidadDeMatcheosParaGanar){
+    if(cantidadDeMatcheosActual == cantidadDeCoincidenciasParaGanar){
       //Mostrar un texto de victoria.
     }
   }

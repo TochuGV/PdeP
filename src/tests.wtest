@@ -9,7 +9,7 @@ describe "Niveles" {
       colores = ["azul.jpg", "rojo.jpg"],
       velocidadDeGeneracion = 500,
       velocidadDeMovimiento = 200,
-      cantidadDeMatcheosParaGanar = 5
+      cantidadDeCoincidenciasParaGanar = 5
     )
     nivel.iniciar()
     assert.equals(2, nivel.pistas().size())
