@@ -2,13 +2,12 @@ import wollok.game.*
 import entidades.pista.*
 import entidades.puntaje.*
 import entidades.flechaIndicadora.*
+import entidades.dificultad.*
 
 class Nivel {
-  const colores = [];
-  const velocidadDeGeneracion;
-  const velocidadDeMovimiento;
-  const cantidadDeCoincidenciasParaGanar;
+  var property dificultad;
   var cantidadDeCoincidenciasActual = 0;
+  
   const alturaBase = (540 / 50) - (150 / 50);
   const separadorDePosicionesDePistas = 2.25;
   const posicionesDePistas = [game.at(2, alturaBase), game.at(2, (540 / 50) - (150 / 50) * separadorDePosicionesDePistas)];
@@ -16,15 +15,15 @@ class Nivel {
   // Habría que buscar una forma de hacer que tome la altura de la pantalla y las dimensiones de los cuadrados.
   const pistas = [];
 
-  method colores () = colores;
-  method velocidadDeGeneracion () = velocidadDeGeneracion;
-  method velocidadDeMovimiento () = velocidadDeMovimiento;
-  method cantidadDeCoincidenciasParaGanar () = cantidadDeCoincidenciasParaGanar;
   method cantidadDeCoincidenciasActual () = cantidadDeCoincidenciasActual;
   method pistas () = pistas;
 
   method iniciar(){
     puntaje.aparecer();
+
+    const colores = dificultad.colores()
+    const velocidadDeGeneracion = dificultad.velocidadDeGeneracion()
+    const velocidadDeMovimiento = dificultad.velocidadDeMovimiento()
 
     var indiceColor = 0;
     posicionesDePistas.forEach({ posicionBase =>

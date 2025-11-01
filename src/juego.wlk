@@ -3,39 +3,26 @@ import entidades.cuadradoDinamico.*
 import entidades.cuadradoEstatico.*
 import entidades.pista.*
 import entidades.nivel.*
-
-/*
-src
-  entidades
-    cuadrado.wlk
-    cuadradoEstatico.wlk
-    cuadradoDinamico.wlk
-    flechaIndicadora.wlk
-    pista.wlk
-  modificadores
-    modificador.wlk
-    multicolor.wlk
-    lentitud.wlk
-    duplicadorPuntuacion.wlk
-  modos
-    niveles.wlk
-    infinito.wlk
-  juego.wlk
-  programa.wpgm
-assets
-*/
+import entidades.dificultad.*
 
 object juego {
-  var property cuadradosDinamicos = [];
-  var property cuadradosEstaticos = [];
+  var property nivelActual = null;
+  var property indiceDificultad = 0;
   
   method iniciar(){
-    const nivel = new Nivel(
-      colores = ["azul.jpg", "rojo.jpg"],
-      velocidadDeGeneracion = 5000,
-      velocidadDeMovimiento = 200,
-      cantidadDeCoincidenciasParaGanar = 10
-    );
-    nivel.iniciar();
+    self.cargarDificultadActual()
+  }
+
+  method cargarDificultadActual(){
+    const dificultad = dificultades.lista().get(indiceDificultad)
+    nivelActual = new Nivel(dificultad = dificultad);
+    nivelActual.iniciar();
+  }
+
+  method siguienteDificultad(){
+    if (indiceDificultad < dificultades.lista.size() - 1) {
+      indiceDificultad += 1
+      self.cargarDificultadActual()
+    } // Habría que agregar un 'else' diciendo que completó el juego
   }
 }

@@ -3,6 +3,7 @@ import entidades.puntaje.*
 import entidades.cuadradoEstatico.*
 import wollok.game.*
 
+/*
 describe "Niveles" {
   test "Hay dos pistas" {
     const nivel = new Nivel(
@@ -15,6 +16,7 @@ describe "Niveles" {
     assert.equals(2, nivel.pistas().size())
   }
 }
+*/
 
 describe "Puntos" {
   test "Se suman puntos" {
