@@ -6,10 +6,13 @@ import entidades.nivel.*
 import entidades.dificultad.*
 
 object juego {
-  var property indiceDificultad = 0;
-  var property nivelActual = new Nivel(dificultad = dificultades.lista().get(indiceDificultad));
+  var property indiceDificultad = null;
+  var property nivelActual = null;
 
   method iniciar(){
+    indiceDificultad = 0;
+    nivelActual = new Nivel(dificultad = dificultades.lista().get(indiceDificultad));
+
     nivelActual.iniciar();
   }
 
