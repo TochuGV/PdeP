@@ -16,7 +16,7 @@ object flechaIndicadora {
   method iniciarEventosDeTeclado(){
     keyboard.down().onPressDo{self.mover(1)};
     keyboard.up().onPressDo{self.mover(-1)};
-    keyboard.s().onPressDo{pistas.get(indicePistaApuntada).cambiarColor()};
+    keyboard.s().onPressDo{self.cambiarColor()};
   }
 
   method mover(direccion){
@@ -31,5 +31,11 @@ object flechaIndicadora {
     if(nuevaPosicion >= pistas.size()) return 0;
     if(nuevaPosicion < 0) return pistas.size() - 1;
     return nuevaPosicion;
+  }
+
+  method cambiarColor(){
+    const pistaApuntada = pistas.get(indicePistaApuntada);
+    pistaApuntada.cuadradoEstatico().cambiarColor();
+    pistaApuntada.cambiarColor();
   }
 }

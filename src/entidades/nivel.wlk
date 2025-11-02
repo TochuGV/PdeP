@@ -3,7 +3,8 @@ import entidades.pista.*
 import entidades.puntaje.*
 import entidades.flechaIndicadora.*
 import entidades.dificultad.*
-
+import src.pantallas.handlerPantalla.*
+import src.juego.*
 class Nivel {
   var property dificultad;
   var cantidadDeCoincidenciasActual = 0;
@@ -18,23 +19,23 @@ class Nivel {
   method cantidadDeCoincidenciasActual () = cantidadDeCoincidenciasActual;
   method pistas () = pistas;
 
+  method colores() = dificultad.colores()
+  method velocidadDeGeneracion() = dificultad.velocidadDeGeneracion()
+  method velocidadDeMovimiento() = dificultad.velocidadDeMovimiento()
+
   method iniciar(){
     puntaje.aparecer();
-
-    const colores = dificultad.colores()
-    const velocidadDeGeneracion = dificultad.velocidadDeGeneracion()
-    const velocidadDeMovimiento = dificultad.velocidadDeMovimiento()
 
     var indiceColor = 0;
     posicionesDePistas.forEach({ posicionBase =>
       const nuevaPista = new Pista(
-        colores = colores, 
+        nivel = self,
         indiceColorActual = indiceColor, 
         position = posicionBase
       );
       pistas.add(nuevaPista);
-      nuevaPista.iniciar(self);
-      indiceColor = (indiceColor + 1) % colores.size();
+      nuevaPista.iniciar();
+      indiceColor = (indiceColor + 1) % self.colores().size();
     });
 
     flechaIndicadora.pistas(pistas);
@@ -51,7 +52,7 @@ class Nivel {
     if(self.todasLasPistasHacenMatch()){
       puntaje.sumarPuntos(10);
       pistas.forEach({ pista => pista.removerCuadradoDinamico() });
-      self.aumentarCantidadDeCoincidenciasActual();
+      self.chequearCambioDeNivel();
       //if (cantidadDeCoincidenciasActual == 10) {
         //self.aumentarDificultad();
       //}
@@ -61,21 +62,20 @@ class Nivel {
   }
 
   method perder(){
-    game.removeTickEvent("generarCuadradosDinamicos");
-    game.removeTickEvent("movimientoCuadrado");
+    handlerPantalla.siguientePantalla();
   }
 
   method todasLasPistasHacenMatch() = pistas.all({pista => pista.hayMatch()})
 
-  method aumentarCantidadDeCoincidenciasActual(){
-    cantidadDeCoincidenciasActual += 1;
-  }
-
-  /*
-  method ganar(){
-    if(cantidadDeMatcheosActual == cantidadDeCoincidenciasParaGanar){
-      //Mostrar un texto de victoria.
+  method chequearCambioDeNivel(){
+    if(cantidadDeCoincidenciasActual == dificultad.cantidadDeCoincidenciasParaAvanzar()){
+      cantidadDeCoincidenciasActual = 0;
+      juego.siguienteDificultad();
+    }
+    else {
+      cantidadDeCoincidenciasActual += 1;
     }
   }
-  */
+
+
 }

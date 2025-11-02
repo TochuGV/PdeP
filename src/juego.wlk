@@ -6,23 +6,22 @@ import entidades.nivel.*
 import entidades.dificultad.*
 
 object juego {
-  var property nivelActual = null;
   var property indiceDificultad = 0;
-  
-  method iniciar(){
-    self.cargarDificultadActual()
-  }
+  var property nivelActual = new Nivel(dificultad = dificultades.lista().get(indiceDificultad));
 
-  method cargarDificultadActual(){
-    const dificultad = dificultades.lista().get(indiceDificultad)
-    nivelActual = new Nivel(dificultad = dificultad);
+  method iniciar(){
     nivelActual.iniciar();
   }
 
+  method cargarDificultadActual(){
+    nivelActual.dificultad(dificultades.lista().get(indiceDificultad))
+  }
+
   method siguienteDificultad(){
-    if (indiceDificultad < dificultades.lista.size() - 1) {
-      indiceDificultad += 1
-      self.cargarDificultadActual()
+    if (indiceDificultad < dificultades.lista().size() - 1) {
+      indiceDificultad = indiceDificultad + 1;
+      self.cargarDificultadActual();
     } // Habría que agregar un 'else' diciendo que completó el juego
+      // LL: Y si hacemos un par mas de dificultades que sean muy dificiles? Asi en algun momento se pierde y dejamos el score final
   }
 }

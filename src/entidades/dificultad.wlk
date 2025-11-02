@@ -1,9 +1,9 @@
 class Dificultad {
-  const nombre;
-  const colores;
-  const velocidadDeGeneracion;
-  const velocidadDeMovimiento;
-  const cantidadDeCoincidenciasParaAvanzar;
+  var property nombre;
+  var property colores;
+  var property velocidadDeGeneracion;
+  var property velocidadDeMovimiento;
+  var property cantidadDeCoincidenciasParaAvanzar;
 }
 
 object dificultades{
@@ -14,7 +14,7 @@ object dificultades{
     colores = ["azul.jpg", "rojo.jpg"],
     velocidadDeGeneracion = 5000,
     velocidadDeMovimiento = 200,
-    cantidadDeCoincidenciasParaAvanzar = 5
+    cantidadDeCoincidenciasParaAvanzar = 1
   );
 
   const normal = new Dificultad(
@@ -22,7 +22,7 @@ object dificultades{
     colores = ["azul.jpg", "rojo.jpg", "verde.jpg"],
     velocidadDeGeneracion = 4000,
     velocidadDeMovimiento = 150,
-    cantidadDeCoincidenciasParaAvanzar = 10
+    cantidadDeCoincidenciasParaAvanzar = 1
   );
 
   const dificil = new Dificultad(
@@ -30,6 +30,6 @@ object dificultades{
     colores = ["azul.jpg", "rojo.jpg", "verde.jpg", "amarillo.jpg"],
     velocidadDeGeneracion = 3000,
     velocidadDeMovimiento = 100,
-    cantidadDeCoincidenciasParaAvanzar = 15
+    cantidadDeCoincidenciasParaAvanzar = 1
   )
 }

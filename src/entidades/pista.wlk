@@ -3,15 +3,15 @@ import entidades.cuadradoEstatico.*
 import entidades.cuadradoDinamico.*
 import entidades.nivel.*
 class Pista {
-  var property colores;
+  var property nivel;
   var property indiceColorActual;
   var property image = null;
   var property position;
   var cuadradoEstatico = null;
   var property cuadradosDinamicos = [];
 
-  method iniciar(nivel){
-    const colorActual = colores.get(indiceColorActual)
+  method iniciar(){
+    const colorActual = nivel.colores().get(indiceColorActual)
     const imagenPista = "pista-" + colorActual
 
     self.image(imagenPista)
@@ -19,9 +19,6 @@ class Pista {
 
     const posicionCuadradoEstatico = game.at(position.x() + 1, position.y())
     //Está puesto así porque sin el '+1' se rompe el programa
-    //Igualmente, ahora lo que ocurre es que solamente aparecen una vez los cuadrados dinámicos
-    //Después, sin importar si coinciden o no, el color del cuadrado estático no se puede cambiar
-    //Se cambia solo el color de la pista, y los cuadrados dinámicos ya no aparecen.
 
     cuadradoEstatico = new CuadradoEstatico(
       nivel = nivel,
@@ -34,18 +31,17 @@ class Pista {
 
   method generarCuadradosDinamicos(velocidadDeGeneracion, velocidadDeMovimiento){
     game.onTick(velocidadDeGeneracion, "generarCuadradosDinamicos", { 
-      self.generarCuadradoDinamico(colores.anyOne(), velocidadDeMovimiento) 
+      self.generarCuadradoDinamico(nivel.colores().anyOne(), velocidadDeMovimiento) 
     });
   }
 
   method generarCuadradoDinamico(color, velocidadDeMovimiento){
     const nuevoCuadrado = new CuadradoDinamico(
-      image = color, 
-      position = game.at(position.x() + 10, position.y()));
+    image = color, 
+    position = game.at(position.x() + 10, position.y()));
     cuadradosDinamicos.add(nuevoCuadrado);
     nuevoCuadrado.aparecer();
     nuevoCuadrado.iniciarMovimiento(velocidadDeMovimiento);
-
   }
 
   method removerCuadradoDinamico(){
@@ -57,14 +53,10 @@ class Pista {
   }
 
   method cuadradoEstatico() = cuadradoEstatico
+
   method hayMatch() = cuadradoEstatico.image() == cuadradosDinamicos.first().image();
 
-  method actualizarColor(){
-    self.image("pista-" + cuadradoEstatico.image())
-  }
-
-  method cambiarColor(){
-    cuadradoEstatico.cambiarColor();
-    self.actualizarColor();
+  method cambiarColor(){  
+   self.image("pista-" + cuadradoEstatico.image())
   }
 }
