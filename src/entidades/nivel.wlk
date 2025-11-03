@@ -9,25 +9,34 @@ class Nivel {
   var property dificultad;
   var cantidadDeCoincidenciasActual = 0;
   
-  const alturaBase = (540 / 50) - (150 / 50);
-  const separadorDePosicionesDePistas = 2.25;
-  const posicionesDePistas = [game.at(2, alturaBase), game.at(2, (540 / 50) - (150 / 50) * separadorDePosicionesDePistas)];
   // La segunda pista hay que escribirla de esa forma porque sino no aparece.
   // Habría que buscar una forma de hacer que tome la altura de la pantalla y las dimensiones de los cuadrados.
   const pistas = [];
 
   method cantidadDeCoincidenciasActual () = cantidadDeCoincidenciasActual;
   method pistas () = pistas;
-
+  method image() = dificultad.fondo();
+  method position() = game.origin();
   method colores() = dificultad.colores()
   method velocidadDeGeneracion() = dificultad.velocidadDeGeneracion()
   method velocidadDeMovimiento() = dificultad.velocidadDeMovimiento()
 
   method iniciar(){
+    game.addVisual(self)
     puntaje.aparecer();
+    self.generarPistas();
+    flechaIndicadora.aparecer();
+  }
 
+  method limpiarPistasAnteriores(){
+    pistas.forEach({ pista => pista.desaparecer() });
+    pistas.clear();
+  }
+
+  method generarPistas(){
+    self.limpiarPistasAnteriores();
     var indiceColor = 0;
-    posicionesDePistas.forEach({ posicionBase =>
+     dificultad.posicionesDePistas().forEach({ posicionBase =>
       const nuevaPista = new Pista(
         nivel = self,
         indiceColorActual = indiceColor, 
@@ -39,7 +48,6 @@ class Nivel {
     });
 
     flechaIndicadora.pistas(pistas);
-    flechaIndicadora.aparecer();
     self.agregarEventoDeColision();
   }
 
@@ -50,8 +58,8 @@ class Nivel {
 
   method verificarResultado(){
     if(self.todasLasPistasHacenMatch()){
-      puntaje.sumarPuntos(10);
       pistas.forEach({ pista => pista.removerCuadradoDinamico() });
+      puntaje.sumarPuntos(10);
       self.chequearCambioDeNivel();
       //if (cantidadDeCoincidenciasActual == 10) {
         //self.aumentarDificultad();
@@ -71,6 +79,8 @@ class Nivel {
     if(cantidadDeCoincidenciasActual == dificultad.cantidadDeCoincidenciasParaAvanzar()){
       cantidadDeCoincidenciasActual = 0;
       juego.siguienteDificultad();
+      self.generarPistas();
+      flechaIndicadora.calibrarPosicion();
     }
     else {
       cantidadDeCoincidenciasActual += 1;
