@@ -6,10 +6,10 @@ import src.entidades.digito.*
 class Resultado inherits Pantalla(image =  "resultado.jpg") {
   
     const digitos = [
-        new Digito(image = "0-grande.jpg", position = game.at(0, game.center().y())),
-        new Digito(image = "0-grande.jpg", position = game.at(6, game.center().y())),
-        new Digito(image = "0-grande.jpg", position = game.at(12, game.center().y())),
-        new Digito(image = "0-grande.jpg", position = game.at(18, game.center().y()))
+        new Digito(image = "0-grande.jpg", position = game.at(11, game.center().y() - 4)),
+        new Digito(image = "0-grande.jpg", position = game.at(15, game.center().y() - 4)),
+        new Digito(image = "0-grande.jpg", position = game.at(19, game.center().y() - 4)),
+        new Digito(image = "0-grande.jpg", position = game.at(23, game.center().y() - 4))
     ];
 
     override method iniciarEventosDeTeclado(){
