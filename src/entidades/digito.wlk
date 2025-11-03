@@ -1,7 +1,7 @@
 import wollok.game.*
 
 class Digito {
-  var property image = "0.jpg";
+  var property image = "0.png";
   var property position;
 
   method aparecer(){
@@ -13,6 +13,6 @@ class Digito {
   }
 
   method cambiarNumero(numero){
-    image = numero + ".jpg";
+    image = numero + ".png";
   }
 }
