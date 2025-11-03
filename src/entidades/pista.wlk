@@ -2,12 +2,13 @@ import wollok.game.*
 import entidades.cuadradoEstatico.*
 import entidades.cuadradoDinamico.*
 import entidades.nivel.*
+
 class Pista {
   var property nivel;
   var property indiceColorActual;
   var property image = null;
   var property position;
-  var cuadradoEstatico = null;
+  var property cuadradoEstatico = null;
   var property cuadradosDinamicos = [];
 
   method iniciar(){
@@ -37,8 +38,9 @@ class Pista {
 
   method generarCuadradoDinamico(color, velocidadDeMovimiento){
     const nuevoCuadrado = new CuadradoDinamico(
-    image = color, 
-    position = game.at(position.x() + 34, position.y()));
+      image = color, 
+      position = game.at(position.x() + 34, position.y())
+    );
     cuadradosDinamicos.add(nuevoCuadrado);
     nuevoCuadrado.aparecer();
     nuevoCuadrado.iniciarMovimiento(velocidadDeMovimiento);
@@ -52,12 +54,13 @@ class Pista {
     }
   }
 
-  method cuadradoEstatico() = cuadradoEstatico
+  //method hayMatch() = (cuadradosDinamicos.size() > 0) && cuadradoEstatico.image() == cuadradosDinamicos.first().image();
+  // TV: Esto hace que cuando llegue a los 40 puntos, finalice el juego automáticamente.
 
   method hayMatch() = cuadradoEstatico.image() == cuadradosDinamicos.first().image();
-
+  
   method cambiarColor(){  
-   self.image("pista-" + cuadradoEstatico.image())
+    self.image("pista-" + cuadradoEstatico.image())
   }
 
   method desaparecer(){

@@ -26,11 +26,11 @@ object flechaIndicadora {
   }
 
   method calcularPosicion() = game.at(pistas.get(indicePistaApuntada).position().x() - 1, pistas.get(indicePistaApuntada).position().y());
-  
+
   method obtenerPistaSiguiente(direccion){
     const nuevaPosicion = indicePistaApuntada + direccion;
-    if(nuevaPosicion >= pistas.size()) return 0;
-    if(nuevaPosicion < 0) return pistas.size() - 1;
+    if (nuevaPosicion >= pistas.size()) return 0;
+    if (nuevaPosicion < 0) return pistas.size() - 1;
     return nuevaPosicion;
   }
 

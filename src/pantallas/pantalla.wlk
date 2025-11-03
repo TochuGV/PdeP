@@ -1,19 +1,18 @@
 import wollok.game.*
 
 class Pantalla {
-    var property image;
+  var property image;
 
-    method position() = game.origin();
+  method position() = game.origin();
 
-    method aparecer(){
-        game.addVisual(self);
-        self.iniciarEventosDeTeclado();
-    }
+  method aparecer(){
+    game.addVisual(self);
+    self.iniciarEventosDeTeclado();
+  }
 
-    method desaparecer(){
-       game.clear();
-    }
+  method desaparecer(){
+    game.clear();
+  }
 
-    method iniciarEventosDeTeclado
-
+  method iniciarEventosDeTeclado
 }

@@ -1,5 +1,6 @@
 import wollok.game.*
 import src.entidades.digito.*
+
 object puntaje {
   var property puntos = 0;
 
@@ -27,7 +28,7 @@ object puntaje {
     const stringDePuntos = puntos.toString();
     const arrayDeDigitos = stringDePuntos.split("");
     const diferenciaDeDigitos = digitos.size() - arrayDeDigitos.size();
-   
+
     (0..(arrayDeDigitos.size() - 1)).forEach{indice => 
       digitos.get(diferenciaDeDigitos + indice).cambiarNumero(arrayDeDigitos.get(indice))
     };
