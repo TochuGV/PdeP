@@ -5,7 +5,7 @@ object flechaIndicadora {
   var property indicePistaApuntada = 0;
   var property pistas = [];
 
-  method image() = "flecha.jpg";
+  method image() = "flecha.png";
 
   method aparecer(){
     position = self.calcularPosicion();
@@ -21,10 +21,10 @@ object flechaIndicadora {
 
   method mover(direccion){
     indicePistaApuntada = self.obtenerPistaSiguiente(direccion);
-    position = self.calcularPosicion()
+    self.calibrarPosicion();
   }
 
-  method calcularPosicion() = game.at(pistas.get(indicePistaApuntada).position().x() - 2, pistas.get(indicePistaApuntada).position().y());
+  method calcularPosicion() = game.at(pistas.get(indicePistaApuntada).position().x() - 1, pistas.get(indicePistaApuntada).position().y());
   
   method obtenerPistaSiguiente(direccion){
     const nuevaPosicion = indicePistaApuntada + direccion;
@@ -37,5 +37,9 @@ object flechaIndicadora {
     const pistaApuntada = pistas.get(indicePistaApuntada);
     pistaApuntada.cuadradoEstatico().cambiarColor();
     pistaApuntada.cambiarColor();
+  }
+
+  method calibrarPosicion(){
+    position = self.calcularPosicion();
   }
 }
