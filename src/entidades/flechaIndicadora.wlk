@@ -8,6 +8,7 @@ object flechaIndicadora {
   method image() = "flecha.png";
 
   method aparecer(){
+    indicePistaApuntada = 0;
     position = self.calcularPosicion();
     game.addVisual(self)
     self.iniciarEventosDeTeclado();
