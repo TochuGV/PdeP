@@ -18,7 +18,7 @@ class Pista {
     game.addVisual(self)
 
     const posicionCuadradoEstatico = game.at(position.x() + 1, position.y())
-    //Está puesto así porque sin el '+1' se rompe el programa
+    //Está puesto así porque sin el '+1' se rompe el programa - LL: Dispara evento de colision con la pista
 
     cuadradoEstatico = new CuadradoEstatico(
       nivel = nivel,
@@ -58,5 +58,12 @@ class Pista {
 
   method cambiarColor(){  
    self.image("pista-" + cuadradoEstatico.image())
+  }
+
+  method desaparecer(){
+    game.removeVisual(self);
+    game.removeTickEvent("generarCuadradosDinamicos");
+    cuadradoEstatico.desaparecer();
+    cuadradosDinamicos.forEach({ cuadrado => cuadrado.desaparecer() });
   }
 }
