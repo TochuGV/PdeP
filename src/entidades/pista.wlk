@@ -38,7 +38,7 @@ class Pista {
   method generarCuadradoDinamico(color, velocidadDeMovimiento){
     const nuevoCuadrado = new CuadradoDinamico(
     image = color, 
-    position = game.at(position.x() + 10, position.y()));
+    position = game.at(position.x() + 34, position.y()));
     cuadradosDinamicos.add(nuevoCuadrado);
     nuevoCuadrado.aparecer();
     nuevoCuadrado.iniciarMovimiento(velocidadDeMovimiento);
