@@ -2,12 +2,12 @@ import wollok.game.*
 import src.entidades.digito.*
 object puntaje {
   var property puntos = 0;
-  
+
   const digitos = [
-    new Digito(position = game.at(1, 1)),
-    new Digito(position = game.at(2, 1)),
-    new Digito(position = game.at(3, 1)),
-    new Digito(position = game.at(4, 1))
+    new Digito(position = game.at(15, 1)),
+    new Digito(position = game.at(17, 1)),
+    new Digito(position = game.at(19, 1)),
+    new Digito(position = game.at(21, 1))
   ];
 
   method position() = game.origin();
