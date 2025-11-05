@@ -10,5 +10,6 @@ class Cuadrado {
 
   method desaparecer(){
     game.removeVisual(self);
+    position = game.at(9999,9999);
   }
 }
