@@ -10,6 +10,8 @@ class Dificultad {
 
 object dificultades{
   var property lista = [facil, normal, dificil, imposible];
+  const posicionesDosPistas = [game.at(2, game.center().y() + 8), game.at(2, game.center().y() + 4)];
+  const posicionesTresPistas = [game.at(2, game.center().y() + 10), game.at(2, game.center().y() + 6), game.at(2, game.center().y() + 2)];
 
   const facil = new Dificultad(
     nombre = "FACIL",
@@ -18,7 +20,7 @@ object dificultades{
     velocidadDeGeneracion = 5000,
     velocidadDeMovimiento = 200,
     cantidadDeCoincidenciasParaAvanzar = 1,
-    posicionesDePistas = [game.at(2, game.center().y() + 8), game.at(2, game.center().y() + 4)]
+    posicionesDePistas = posicionesDosPistas
   );
 
   const normal = new Dificultad(
@@ -28,7 +30,7 @@ object dificultades{
     velocidadDeGeneracion = 4000,
     velocidadDeMovimiento = 150,
     cantidadDeCoincidenciasParaAvanzar = 1,
-    posicionesDePistas = [game.at(2, game.center().y() + 10), game.at(2, game.center().y() + 6), game.at(2, game.center().y() + 2)]
+    posicionesDePistas = posicionesTresPistas
   );
 
   const dificil = new Dificultad(
@@ -38,7 +40,7 @@ object dificultades{
     velocidadDeGeneracion = 3000,
     velocidadDeMovimiento = 100,
     cantidadDeCoincidenciasParaAvanzar = 1,
-    posicionesDePistas = [game.at(2, game.center().y() + 10), game.at(2, game.center().y() + 6), game.at(2, game.center().y() + 2)]
+    posicionesDePistas = posicionesTresPistas
   );
 
   const imposible = new Dificultad(
@@ -48,6 +50,6 @@ object dificultades{
     velocidadDeGeneracion = 2000,
     velocidadDeMovimiento = 100,
     cantidadDeCoincidenciasParaAvanzar = 999,
-    posicionesDePistas = [game.at(2, game.center().y() + 10), game.at(2, game.center().y() + 6), game.at(2, game.center().y() + 2)]
+    posicionesDePistas = posicionesTresPistas
   );
 }
