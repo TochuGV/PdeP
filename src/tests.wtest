@@ -1,36 +1,44 @@
-import entidades.nivel.*;
+import entidades.nivel.*
 import entidades.puntaje.*
 import entidades.cuadradoEstatico.*
+import entidades.dificultad.*
+import entidades.digito.*
+import entidades.pista.*
+import entidades.cuadradoDinamico.*
+import entidades.flechaIndicadora.*
+import juego.*
 import wollok.game.*
 
-/*
-describe "Niveles" {
-  test "Hay dos pistas" {
-    const nivel = new Nivel(
-      colores = ["azul.jpg", "rojo.jpg"],
-      velocidadDeGeneracion = 500,
-      velocidadDeMovimiento = 200,
-      cantidadDeCoincidenciasParaGanar = 5
-    )
-    nivel.iniciar()
-    assert.equals(2, nivel.pistas().size())
-  }
-}
-*/
 
-describe "Puntos" {
-  test "Se suman puntos" {
-    puntaje.sumarPuntos(100)
-    assert.equals(100, puntaje.puntos())
-  }
+
+describe "Actualización de dificultad y niveles" {
+  test "cargarDificultadActual actualiza nivel con dificultad correcta" {
+      juego.iniciar()
+      juego.cargarDificultadActual()
+      assert.equals(dificultades.lista().get(0), juego.nivelActual().dificultad())
+}
 }
 
-/*
-describe "CuadradoEstatico" {
-  test "Se cambia de color de rojo a azul" {
-    const cuadrado = new CuadradoEstatico(image = "rojo.jpg", position = game.center()) //Hay que instanciar el nivel
-    cuadrado.cambiarImagen("azul.jpg") 
-    assert.equals("azul.jpg", cuadrado.image())
-  }
+test "siguienteDificultad incrementa indice correctamente" {
+    juego.iniciar()
+    juego.siguienteDificultad()
+    assert.equals(1, juego.indiceDificultad())
 }
-*/
+
+test "siguienteDificultad no excede máximo" {
+    juego.iniciar()
+    juego.indiceDificultad(dificultades.lista().size() - 1)
+    juego.siguienteDificultad()
+    assert.equals(dificultades.lista().size() - 1, juego.indiceDificultad())
+}
+
+test "puntaje se inicializa correctamente" {
+    puntaje.reiniciarPuntaje()
+    assert.equals(0, puntaje.puntos())
+}
+
+test "sumarPuntos actualiza correctamente" {
+    puntaje.reiniciarPuntaje()
+    puntaje.sumarPuntos(15)
+    assert.equals(15, puntaje.puntos())
+}
