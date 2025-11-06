@@ -67,7 +67,6 @@ class Nivel {
       self.perder()
     }
   }
-
   method perder() {
     handlerPantalla.siguientePantalla()
   }
@@ -75,13 +74,12 @@ class Nivel {
   method todasLasPistasHacenMatch() = pistas.all({ pista => pista.hayMatch() })
 
   method chequearCambioDeNivel() {
-    if (cantidadDeCoincidenciasActual == dificultad.cantidadDeCoincidenciasParaAvanzar()) {
+    cantidadDeCoincidenciasActual += 1
+    if (cantidadDeCoincidenciasActual >= dificultad.cantidadDeCoincidenciasParaAvanzar()) {
       cantidadDeCoincidenciasActual = 0
       juego.siguienteDificultad()
       self.generarPistas()
       flechaIndicadora.calibrarPosicion()
-    } else {
-      cantidadDeCoincidenciasActual += 1
     }
   }
 }
