@@ -10,6 +10,7 @@ class Pista {
   var property position;
   var property cuadradoEstatico = null;
   var property cuadradosDinamicos = [];
+  //var property cantidadGenerada = 0;
 
   method iniciar(){
     const colorActual = nivel.colores().get(indiceColorActual)
@@ -31,8 +32,14 @@ class Pista {
   }
 
   method generarCuadradosDinamicos(velocidadDeGeneracion, velocidadDeMovimiento){
-    game.onTick(velocidadDeGeneracion, "generarCuadradosDinamicos", { 
-      self.generarCuadradoDinamico(nivel.colores().anyOne(), velocidadDeMovimiento) 
+    var cantidadGenerada = 0;
+    game.onTick(velocidadDeGeneracion, "generarCuadradosDinamicos", {
+      if (cantidadGenerada < nivel.dificultad().cantidadDeCoincidenciasParaAvanzar()) {
+        self.generarCuadradoDinamico(nivel.colores().anyOne(), velocidadDeMovimiento)
+        cantidadGenerada += 1;
+      } else {
+        game.removeTickEvent("generarCuadradosDinamicos");
+      }
     });
   }
 
