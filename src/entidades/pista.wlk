@@ -10,7 +10,6 @@ class Pista {
   var property position;
   var property cuadradoEstatico = null;
   var property cuadradosDinamicos = [];
-  //var property cantidadGenerada = 0;
 
   method iniciar(){
     const colorActual = nivel.colores().get(indiceColorActual)
@@ -20,7 +19,7 @@ class Pista {
     game.addVisual(self)
 
     const posicionCuadradoEstatico = game.at(position.x() + 1, position.y())
-    //Está puesto así porque sin el '+1' se rompe el programa - LL: Dispara evento de colision con la pista
+    //Está puesto así porque sin el '+1' se rompe el programa, dispara evento de colision con la pista
 
     cuadradoEstatico = new CuadradoEstatico(
       nivel = nivel,
@@ -60,9 +59,6 @@ class Pista {
       cuadradosDinamicos.remove(cuadradoARemover);
     }
   }
-
-  //method hayMatch() = (cuadradosDinamicos.size() > 0) && cuadradoEstatico.image() == cuadradosDinamicos.first().image();
-  // TV: Esto hace que cuando llegue a los 40 puntos, finalice el juego automáticamente.
 
   method hayMatch() = cuadradoEstatico.image() == cuadradosDinamicos.first().image();
   

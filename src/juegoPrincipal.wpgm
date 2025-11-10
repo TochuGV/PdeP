@@ -3,8 +3,8 @@ import pantallas.handlerPantalla.*
 
 program juegoPrincipal {
   game.cellSize(50);
-  game.width(1900 / 50); // 1080 / 5
-  game.height(1000 / 50); // 540 / 5
+  game.width(1900 / 50);
+  game.height(1000 / 50);
   game.title('Switch!');
   handlerPantalla.inicializar();
   game.start();
