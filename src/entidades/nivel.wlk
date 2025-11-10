@@ -3,6 +3,7 @@ import entidades.pista.*
 import entidades.puntaje.*
 import entidades.flechaIndicadora.*
 import entidades.dificultad.*
+import entidades.sonido.*
 import src.pantallas.handlerPantalla.*
 import src.juego.*
 
@@ -61,10 +62,12 @@ class Nivel {
   method verificarResultado() {
     if (self.todasLasPistasHacenMatch()) {
       pistas.forEach({ pista => pista.removerCuadradoDinamico() })
+      new EfectoSonido(nombre = "coincidencia.mp3").reproducir()
       puntaje.sumarPuntos(10)
       self.chequearCambioDeNivel()
     } else {
       self.perder()
+      new EfectoSonido(nombre = "derrota.mp3").reproducir()
     }
   }
   method perder() {
@@ -78,6 +81,7 @@ class Nivel {
     if (cantidadDeCoincidenciasActual >= dificultad.cantidadDeCoincidenciasParaAvanzar()) {
       cantidadDeCoincidenciasActual = 0
       juego.siguienteDificultad()
+      new EfectoSonido(nombre = "subidaDeNivel.mp3").reproducir()
       self.generarPistas()
       flechaIndicadora.calibrarPosicion()
     }
