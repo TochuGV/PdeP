@@ -12,11 +12,13 @@ object dificultades{
   var property lista = [facil, normal, dificil, imposible];
   const posicionesDosPistas = [game.at(2, game.center().y() + 8), game.at(2, game.center().y() + 4)];
   const posicionesTresPistas = [game.at(2, game.center().y() + 10), game.at(2, game.center().y() + 6), game.at(2, game.center().y() + 2)];
+  const fondoDosPistas = "fondo-dos-pistas.jpg";
+  const fondoTresPistas = "fondo-tres-pistas.jpg";
 
   const facil = new Dificultad(
     nombre = "FACIL",
     colores = ["azul.png", "rojo.png"],
-    fondo = "fondo-facil.jpg",
+    fondo = fondoDosPistas,
     velocidadDeGeneracion = 5000,
     velocidadDeMovimiento = 200,
     cantidadDeCoincidenciasParaAvanzar = 1,
@@ -26,7 +28,7 @@ object dificultades{
   const normal = new Dificultad(
     nombre = "NORMAL",
     colores = ["azul.png", "rojo.png", "verde.png"],
-    fondo = "fondo-normal.jpg",
+    fondo = fondoTresPistas,
     velocidadDeGeneracion = 4000,
     velocidadDeMovimiento = 150,
     cantidadDeCoincidenciasParaAvanzar = 1,
@@ -36,7 +38,7 @@ object dificultades{
   const dificil = new Dificultad(
     nombre = "DIFICIL",
     colores = ["azul.png", "rojo.png", "verde.png", "amarillo.png"],
-    fondo = "fondo-normal.jpg",
+    fondo = fondoTresPistas,
     velocidadDeGeneracion = 3000,
     velocidadDeMovimiento = 100,
     cantidadDeCoincidenciasParaAvanzar = 1,
@@ -46,7 +48,7 @@ object dificultades{
   const imposible = new Dificultad(
     nombre = "IMPOSIBLE",
     colores = ["azul.png", "rojo.png", "verde.png", "amarillo.png"],
-    fondo = "fondo-normal.jpg",
+    fondo = fondoTresPistas,
     velocidadDeGeneracion = 2000,
     velocidadDeMovimiento = 100,
     cantidadDeCoincidenciasParaAvanzar = 999,
