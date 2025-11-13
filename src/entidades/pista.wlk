@@ -22,9 +22,9 @@ class Pista {
     //Está puesto así porque sin el '+1' se rompe el programa, dispara evento de colision con la pista
 
     cuadradoEstatico = new CuadradoEstatico(
-      nivel = nivel,
       image = colorActual,
-      position = posicionCuadradoEstatico
+      position = posicionCuadradoEstatico,
+      nivel = nivel
     )
     cuadradoEstatico.aparecer();
     self.generarCuadradosDinamicos(nivel.velocidadDeGeneracion(), nivel.velocidadDeMovimiento());

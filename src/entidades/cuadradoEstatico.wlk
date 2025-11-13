@@ -2,8 +2,8 @@ import wollok.game.*
 import entidades.cuadrado.*
 
 class CuadradoEstatico inherits Cuadrado {
+  const nivel;
   var indiceColorActual = 0;
-  var property nivel;
 
   method cambiarColor(){
     const colores = nivel.colores();

@@ -1,7 +1,4 @@
 import wollok.game.*
-import entidades.cuadradoDinamico.*
-import entidades.cuadradoEstatico.*
-import entidades.pista.*
 import entidades.nivel.*
 import entidades.dificultad.*
 

@@ -22,7 +22,7 @@ object dificultades{
     fondo = fondoDosPistas,
     velocidadDeGeneracion = 5000,
     velocidadDeMovimiento = 200,
-    cantidadDeCoincidenciasParaAvanzar = 1,
+    cantidadDeCoincidenciasParaAvanzar = 3,
     posicionesDePistas = posicionesDosPistas
   );
 
@@ -32,7 +32,7 @@ object dificultades{
     fondo = fondoTresPistas,
     velocidadDeGeneracion = 4000,
     velocidadDeMovimiento = 150,
-    cantidadDeCoincidenciasParaAvanzar = 1,
+    cantidadDeCoincidenciasParaAvanzar = 3,
     posicionesDePistas = posicionesTresPistas
   );
 
@@ -42,7 +42,7 @@ object dificultades{
     fondo = fondoTresPistas,
     velocidadDeGeneracion = 3000,
     velocidadDeMovimiento = 100,
-    cantidadDeCoincidenciasParaAvanzar = 1,
+    cantidadDeCoincidenciasParaAvanzar = 3,
     posicionesDePistas = posicionesTresPistas
   );
 
