@@ -1,0 +1,1 @@
+# Trabajos Prácticos - Paradigmas de Programación (2025)
