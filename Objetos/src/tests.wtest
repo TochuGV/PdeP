@@ -1,0 +1,44 @@
+import wollok.game.*
+import entidades.cuadradoDinamico.*
+import entidades.cuadradoEstatico.*
+import entidades.dificultad.*
+import entidades.digito.*
+import entidades.flechaIndicadora.*
+import entidades.nivel.*
+import entidades.pista.*
+import entidades.puntaje.*
+import juego.*
+
+describe "Gestión de dificultad y niveles" {
+  test "cargarDificultadActual actualiza nivel con dificultad correcta" {
+    juego.iniciar()
+    juego.cargarDificultadActual()
+    assert.equals(dificultades.lista().get(0), juego.nivelActual().dificultad())
+  }
+
+  test "siguienteDificultad incrementa indice correctamente" {
+    juego.iniciar()
+    juego.siguienteDificultad()
+    assert.equals(1, juego.indiceDificultad())
+  }
+
+  test "siguienteDificultad no excede máximo" {
+    juego.iniciar()
+    juego.indiceDificultad(dificultades.lista().size() - 1)
+    juego.siguienteDificultad()
+    assert.equals(dificultades.lista().size() - 1, juego.indiceDificultad())
+  }
+}
+
+describe "Gestión de puntaje" {
+  test "puntaje se inicializa correctamente" {
+    puntaje.reiniciarPuntaje()
+    assert.equals(0, puntaje.puntos())
+  }
+
+  test "sumarPuntos actualiza correctamente" {
+    puntaje.reiniciarPuntaje()
+    puntaje.sumarPuntos(15)
+    assert.equals(15, puntaje.puntos())
+  }
+}
